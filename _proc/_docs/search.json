@@ -1,0 +1,106 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "KalmanPaper",
+    "section": "",
+    "text": "This file will become your README and also the index of your documentation.",
+    "crumbs": [
+      "KalmanPaper"
+    ]
+  },
+  {
+    "objectID": "index.html#developer-guide",
+    "href": "index.html#developer-guide",
+    "title": "KalmanPaper",
+    "section": "Developer Guide",
+    "text": "Developer Guide\nIf you are new to using nbdev here are some useful pointers to get you started.\n\nInstall KalmanPaper in Development mode\n# make sure KalmanPaper package is installed in development mode\n$ pip install -e .\n\n# make changes under nbs/ directory\n# ...\n\n# compile to have changes apply to KalmanPaper\n$ nbdev_prepare",
+    "crumbs": [
+      "KalmanPaper"
+    ]
+  },
+  {
+    "objectID": "index.html#usage",
+    "href": "index.html#usage",
+    "title": "KalmanPaper",
+    "section": "Usage",
+    "text": "Usage\n\nInstallation\nInstall latest from the GitHub repository:\n$ pip install git+https://github.com/SuzuSys/KalmanPaper.git\nor from conda\n$ conda install -c SuzuSys KalmanPaper\nor from pypi\n$ pip install KalmanPaper\n\n\nDocumentation\nDocumentation can be found hosted on this GitHub repository’s pages. Additionally you can find package manager specific guidelines on conda and pypi respectively.",
+    "crumbs": [
+      "KalmanPaper"
+    ]
+  },
+  {
+    "objectID": "index.html#how-to-use",
+    "href": "index.html#how-to-use",
+    "title": "KalmanPaper",
+    "section": "How to use",
+    "text": "How to use\nFill me in please! Don’t forget code examples:\n\n1+1\n\n2",
+    "crumbs": [
+      "KalmanPaper"
+    ]
+  },
+  {
+    "objectID": "core.html",
+    "href": "core.html",
+    "title": "core",
+    "section": "",
+    "text": "foo\n\n foo ()"
+  },
+  {
+    "objectID": "test2.html",
+    "href": "test2.html",
+    "title": "test",
+    "section": "",
+    "text": "from KalmanPaper.core import foo\n\n\nfoo()",
+    "crumbs": [
+      "test"
+    ]
+  },
+  {
+    "objectID": "template.html",
+    "href": "template.html",
+    "title": "Template",
+    "section": "",
+    "text": "foo\n\n foo (a, b=2)\n\n\n\n\n\nType\nDefault\nDetails\n\n\n\n\na\n\n\n\\(a\\)\n\n\nb\nint\n2\n\\(b\\)\n\n\nReturns\nint\n\n\\(c\\)",
+    "crumbs": [
+      "Template"
+    ]
+  },
+  {
+    "objectID": "funcs.html",
+    "href": "funcs.html",
+    "title": "Functions",
+    "section": "",
+    "text": "\\[\\sigma(x)=\\frac{1}{1+e^{-x}}\\]\n\n\n\n\n losi (x:numpy.ndarray[tuple[typing.Any,...],numpy.dtype[numpy.float64]]|n\n       umpy.float64)\n\n\n\n\n\n\n\n\n\n\nType\nDetails\n\n\n\n\nx\nnumpy.ndarray[tuple[typing.Any, …], numpy.dtype[numpy.float64]] | numpy.float64\n\\(x\\)\n\n\nReturns\nnumpy.ndarray[tuple[typing.Any, …], numpy.dtype[numpy.float64]] | numpy.float64\n\\(\\sigma(x)=1/(1+ e\\\\^{-x})\\)",
+    "crumbs": [
+      "Functions"
+    ]
+  },
+  {
+    "objectID": "template copy.html",
+    "href": "template copy.html",
+    "title": "Template",
+    "section": "",
+    "text": "foo\n\n foo (a, b=2)\n\n\n\n\n\nType\nDefault\nDetails\n\n\n\n\na\n\n\n\\(a\\)\n\n\nb\nint\n2\n\\(b\\)\n\n\nReturns\nint\n\n\\(c\\)"
+  },
+  {
+    "objectID": "funcs.html#logistic-sigmoid",
+    "href": "funcs.html#logistic-sigmoid",
+    "title": "Functions",
+    "section": "",
+    "text": "\\[\\sigma(x)=\\frac{1}{1+e^{-x}}\\]\n\n\n\n\n losi (x:numpy.ndarray[tuple[typing.Any,...],numpy.dtype[numpy.float64]]|n\n       umpy.float64)\n\n\n\n\n\n\n\n\n\n\nType\nDetails\n\n\n\n\nx\nnumpy.ndarray[tuple[typing.Any, …], numpy.dtype[numpy.float64]] | numpy.float64\n\\(x\\)\n\n\nReturns\nnumpy.ndarray[tuple[typing.Any, …], numpy.dtype[numpy.float64]] | numpy.float64\n\\(\\sigma(x)=1/(1+ e\\\\^{-x})\\)",
+    "crumbs": [
+      "Functions"
+    ]
+  },
+  {
+    "objectID": "funcs.html#lambda-function",
+    "href": "funcs.html#lambda-function",
+    "title": "Functions",
+    "section": "Lambda Function",
+    "text": "Lambda Function\n\\[\\lambda(x)=\\frac{1}{2x}\\left[\\sigma(x)-\\frac{1}{2}\\right]\\]\n\n\nlam\n\n lam (x:numpy.ndarray[tuple[typing.Any,...],numpy.dtype[numpy.float64]]|nu\n      mpy.float64)\n\n\n\n\n\n\n\n\n\n\nType\nDetails\n\n\n\n\nx\nnumpy.ndarray[tuple[typing.Any, …], numpy.dtype[numpy.float64]] | numpy.float64\n\\(x\\)\n\n\nReturns\nnumpy.ndarray[tuple[typing.Any, …], numpy.dtype[numpy.float64]] | numpy.float64\n\\(\\lambda(x)\\)",
+    "crumbs": [
+      "Functions"
+    ]
+  }
+]
