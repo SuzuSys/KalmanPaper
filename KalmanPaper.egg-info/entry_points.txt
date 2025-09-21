@@ -1,2 +1,0 @@
-[nbdev]
-KalmanPaper = KalmanPaper._modidx:d
