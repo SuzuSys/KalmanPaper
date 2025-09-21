@@ -5,5 +5,7 @@ d = { 'settings': { 'branch': 'main',
                 'doc_host': 'https://SuzuSys.github.io',
                 'git_url': 'https://github.com/SuzuSys/KalmanPaper',
                 'lib_path': 'KalmanPaper'},
-  'syms': { 'KalmanPaper.core': { 'KalmanPaper.core.lam': ('funcs.html#lam', 'KalmanPaper/core.py'),
-                                  'KalmanPaper.core.losi': ('funcs.html#losi', 'KalmanPaper/core.py')}}}
+  'syms': { 'KalmanPaper.EKF': {'KalmanPaper.EKF.dxlosi': ('EKF/ekf.html#dxlosi', 'KalmanPaper/EKF.py')},
+            'KalmanPaper.core': {'KalmanPaper.core.foo': ('template.html#foo', 'KalmanPaper/core.py')},
+            'KalmanPaper.simple': { 'KalmanPaper.simple.lam': ('funcs.html#lam', 'KalmanPaper/simple.py'),
+                                    'KalmanPaper.simple.losi': ('funcs.html#losi', 'KalmanPaper/simple.py')}}}

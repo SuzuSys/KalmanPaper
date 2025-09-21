@@ -8,7 +8,7 @@
 
 <meta name="description" content="simple functions">
 
-<title>Functions – KalmanPaper</title>
+<title>簡単な関数等 – KalmanPaper</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -101,10 +101,10 @@ window.Quarto = {
 </script>
 
 <link rel="stylesheet" href="styles.css">
-<meta property="og:title" content="Functions – KalmanPaper">
+<meta property="og:title" content="簡単な関数等 – KalmanPaper">
 <meta property="og:description" content="simple functions">
 <meta property="og:site_name" content="KalmanPaper">
-<meta name="twitter:title" content="Functions – KalmanPaper">
+<meta name="twitter:title" content="簡単な関数等 – KalmanPaper">
 <meta name="twitter:description" content="simple functions">
 <meta name="twitter:card" content="summary">
 </head>
@@ -132,7 +132,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./funcs.html">Functions</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./funcs.html">簡単な関数等</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -163,9 +163,32 @@ window.Quarto = {
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./funcs.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">Functions</span></a>
+ <span class="menu-text">簡単な関数等</span></a>
   </div>
 </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./common.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">共通概念・表記</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">EKF</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./EKF/ekf.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Extended Kalman Filter</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
     </ul>
     </div>
 </nav>
@@ -192,7 +215,7 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Functions</h1>
+<h1 class="title">簡単な関数等</h1>
 </div>
 
 <div>
@@ -219,18 +242,13 @@ window.Quarto = {
 <h2 class="anchored" data-anchor-id="logistic-sigmoid">Logistic Sigmoid</h2>
 <p><span class="math display">\[\sigma(x)=\frac{1}{1+e^{-x}}\]</span></p>
 <hr>
+<p><a href="https://github.com/SuzuSys/KalmanPaper/blob/main/KalmanPaper/simple.py#L13" target="_blank" style="float:right; font-size:smaller">source</a></p>
 <section id="losi" class="level3">
 <h3 class="anchored" data-anchor-id="losi">losi</h3>
 <blockquote class="blockquote">
-<pre><code> losi (x:numpy.ndarray[tuple[typing.Any,...],numpy.dtype[numpy.float64]]|n
-       umpy.float64)</code></pre>
+<pre><code> losi (x:numpy.ndarray[tuple[typing.Any,...],numpy.dtype[numpy.float64]])</code></pre>
 </blockquote>
 <table class="caption-top table">
-<colgroup>
-<col style="width: 9%">
-<col style="width: 38%">
-<col style="width: 52%">
-</colgroup>
 <thead>
 <tr class="header">
 <th></th>
@@ -241,12 +259,12 @@ window.Quarto = {
 <tbody>
 <tr class="odd">
 <td>x</td>
-<td>numpy.ndarray[tuple[typing.Any, …], numpy.dtype[numpy.float64]] | numpy.float64</td>
+<td>ndarray</td>
 <td><span class="math inline">\(x\)</span></td>
 </tr>
 <tr class="even">
 <td><strong>Returns</strong></td>
-<td><strong>numpy.ndarray[tuple[typing.Any, …], numpy.dtype[numpy.float64]] | numpy.float64</strong></td>
+<td><strong>ndarray</strong></td>
 <td><strong><span class="math inline">\(\sigma(x)=1/(1+ e\\^{-x})\)</span></strong></td>
 </tr>
 </tbody>
@@ -257,18 +275,13 @@ window.Quarto = {
 <h2 class="anchored" data-anchor-id="lambda-function">Lambda Function</h2>
 <p><span class="math display">\[\lambda(x)=\frac{1}{2x}\left[\sigma(x)-\frac{1}{2}\right]\]</span></p>
 <hr>
+<p><a href="https://github.com/SuzuSys/KalmanPaper/blob/main/KalmanPaper/simple.py#L19" target="_blank" style="float:right; font-size:smaller">source</a></p>
 <section id="lam" class="level3">
 <h3 class="anchored" data-anchor-id="lam">lam</h3>
 <blockquote class="blockquote">
-<pre><code> lam (x:numpy.ndarray[tuple[typing.Any,...],numpy.dtype[numpy.float64]]|nu
-      mpy.float64)</code></pre>
+<pre><code> lam (x:numpy.ndarray[tuple[typing.Any,...],numpy.dtype[numpy.float64]])</code></pre>
 </blockquote>
 <table class="caption-top table">
-<colgroup>
-<col style="width: 9%">
-<col style="width: 38%">
-<col style="width: 52%">
-</colgroup>
 <thead>
 <tr class="header">
 <th></th>
@@ -279,12 +292,12 @@ window.Quarto = {
 <tbody>
 <tr class="odd">
 <td>x</td>
-<td>numpy.ndarray[tuple[typing.Any, …], numpy.dtype[numpy.float64]] | numpy.float64</td>
+<td>ndarray</td>
 <td><span class="math inline">\(x\)</span></td>
 </tr>
 <tr class="even">
 <td><strong>Returns</strong></td>
-<td><strong>numpy.ndarray[tuple[typing.Any, …], numpy.dtype[numpy.float64]] | numpy.float64</strong></td>
+<td><strong>ndarray</strong></td>
 <td><strong><span class="math inline">\(\lambda(x)\)</span></strong></td>
 </tr>
 </tbody>

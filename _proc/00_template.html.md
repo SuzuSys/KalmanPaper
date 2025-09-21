@@ -10,6 +10,8 @@ title: Template
 
 ---
 
+[source](https://github.com/SuzuSys/KalmanPaper/blob/main/KalmanPaper/core.py#L13){target="_blank" style="float:right; font-size:smaller"}
+
 ### foo
 
 >      foo (a, b=2)

@@ -7,6 +7,7 @@ setup.py
 KalmanPaper/__init__.py
 KalmanPaper/_modidx.py
 KalmanPaper/core.py
+KalmanPaper/simple.py
 KalmanPaper.egg-info/PKG-INFO
 KalmanPaper.egg-info/SOURCES.txt
 KalmanPaper.egg-info/dependency_links.txt

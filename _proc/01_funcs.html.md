@@ -1,7 +1,7 @@
 ---
 description: simple functions
 output-file: funcs.html
-title: Functions
+title: "\u7C21\u5358\u306A\u95A2\u6570\u7B49"
 
 ---
 
@@ -14,15 +14,16 @@ $$\sigma(x)=\frac{1}{1+e^{-x}}$$
 
 ---
 
+[source](https://github.com/SuzuSys/KalmanPaper/blob/main/KalmanPaper/simple.py#L13){target="_blank" style="float:right; font-size:smaller"}
+
 ### losi
 
->      losi (x:numpy.ndarray[tuple[typing.Any,...],numpy.dtype[numpy.float64]]|n
->            umpy.float64)
+>      losi (x:numpy.ndarray[tuple[typing.Any,...],numpy.dtype[numpy.float64]])
 
 |    | **Type** | **Details** |
 | -- | -------- | ----------- |
-| x | numpy.ndarray[tuple[typing.Any, ...], numpy.dtype[numpy.float64]] \| numpy.float64 | $x$ |
-| **Returns** | **numpy.ndarray[tuple[typing.Any, ...], numpy.dtype[numpy.float64]] \| numpy.float64** | **$\sigma(x)=1/(1+ e\\^{-x})$** |
+| x | ndarray | $x$ |
+| **Returns** | **ndarray** | **$\sigma(x)=1/(1+ e\\^{-x})$** |
 
 
 ## Lambda Function
@@ -30,14 +31,15 @@ $$\lambda(x)=\frac{1}{2x}\left[\sigma(x)-\frac{1}{2}\right]$$
 
 ---
 
+[source](https://github.com/SuzuSys/KalmanPaper/blob/main/KalmanPaper/simple.py#L19){target="_blank" style="float:right; font-size:smaller"}
+
 ### lam
 
->      lam (x:numpy.ndarray[tuple[typing.Any,...],numpy.dtype[numpy.float64]]|nu
->           mpy.float64)
+>      lam (x:numpy.ndarray[tuple[typing.Any,...],numpy.dtype[numpy.float64]])
 
 |    | **Type** | **Details** |
 | -- | -------- | ----------- |
-| x | numpy.ndarray[tuple[typing.Any, ...], numpy.dtype[numpy.float64]] \| numpy.float64 | $x$ |
-| **Returns** | **numpy.ndarray[tuple[typing.Any, ...], numpy.dtype[numpy.float64]] \| numpy.float64** | **$\lambda(x)$** |
+| x | ndarray | $x$ |
+| **Returns** | **ndarray** | **$\lambda(x)$** |
 
 
