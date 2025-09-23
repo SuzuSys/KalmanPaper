@@ -14,6 +14,6 @@ d = { 'settings': { 'branch': 'main',
                                 'KalmanPaper.VA.wtt': ('VA/va.html#wtt', 'KalmanPaper/VA.py'),
                                 'KalmanPaper.VA.xipre': ('VA/va.html#xipre', 'KalmanPaper/VA.py')},
             'KalmanPaper.core': {'KalmanPaper.core.foo': ('template.html#foo', 'KalmanPaper/core.py')},
-            'KalmanPaper.gen': {},
+            'KalmanPaper.gen': {'KalmanPaper.gen.gen_w': ('Gen/gen.html#gen_w', 'KalmanPaper/gen.py')},
             'KalmanPaper.simple': { 'KalmanPaper.simple.lam': ('funcs.html#lam', 'KalmanPaper/simple.py'),
                                     'KalmanPaper.simple.losi': ('funcs.html#losi', 'KalmanPaper/simple.py')}}}
