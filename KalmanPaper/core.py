@@ -6,8 +6,8 @@
 __all__ = ['foo']
 
 # %% ../nbs/00_template.ipynb 3
-import numpy as np
-import numpy.typing as npt
+import jax.numpy as jnp
+from jaxtyping import Array, Float
 
 # %% ../nbs/00_template.ipynb 4
 def foo(a,  # $a$

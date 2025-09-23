@@ -189,6 +189,57 @@ window.Quarto = {
 </li>
       </ul>
   </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Exp</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Exp/exp.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Experimentation</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">Gen</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Gen/gen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Generate</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">VA</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./VA/va.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Variational Approximation</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
     </ul>
     </div>
 </nav>
@@ -242,11 +293,11 @@ window.Quarto = {
 <h2 class="anchored" data-anchor-id="logistic-sigmoid">Logistic Sigmoid</h2>
 <p><span class="math display">\[\sigma(x)=\frac{1}{1+e^{-x}}\]</span></p>
 <hr>
-<p><a href="https://github.com/SuzuSys/KalmanPaper/blob/main/KalmanPaper/simple.py#L13" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<p><a href="https://github.com/SuzuSys/KalmanPaper/blob/main/KalmanPaper/simple.py#L14" target="_blank" style="float:right; font-size:smaller">source</a></p>
 <section id="losi" class="level3">
 <h3 class="anchored" data-anchor-id="losi">losi</h3>
 <blockquote class="blockquote">
-<pre><code> losi (x:numpy.ndarray[tuple[typing.Any,...],numpy.dtype[numpy.float64]])</code></pre>
+<pre><code> losi (x:NDArray[Shape['*,*'],Float])</code></pre>
 </blockquote>
 <table class="caption-top table">
 <thead>
@@ -259,12 +310,12 @@ window.Quarto = {
 <tbody>
 <tr class="odd">
 <td>x</td>
-<td>ndarray</td>
+<td>NDArray</td>
 <td><span class="math inline">\(x\)</span></td>
 </tr>
 <tr class="even">
 <td><strong>Returns</strong></td>
-<td><strong>ndarray</strong></td>
+<td><strong>NDArray</strong></td>
 <td><strong><span class="math inline">\(\sigma(x)=1/(1+ e\\^{-x})\)</span></strong></td>
 </tr>
 </tbody>
@@ -275,11 +326,11 @@ window.Quarto = {
 <h2 class="anchored" data-anchor-id="lambda-function">Lambda Function</h2>
 <p><span class="math display">\[\lambda(x)=\frac{1}{2x}\left[\sigma(x)-\frac{1}{2}\right]\]</span></p>
 <hr>
-<p><a href="https://github.com/SuzuSys/KalmanPaper/blob/main/KalmanPaper/simple.py#L19" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<p><a href="https://github.com/SuzuSys/KalmanPaper/blob/main/KalmanPaper/simple.py#L20" target="_blank" style="float:right; font-size:smaller">source</a></p>
 <section id="lam" class="level3">
 <h3 class="anchored" data-anchor-id="lam">lam</h3>
 <blockquote class="blockquote">
-<pre><code> lam (x:numpy.ndarray[tuple[typing.Any,...],numpy.dtype[numpy.float64]])</code></pre>
+<pre><code> lam (x:NDArray[Shape['*,*'],Float])</code></pre>
 </blockquote>
 <table class="caption-top table">
 <thead>
@@ -292,12 +343,12 @@ window.Quarto = {
 <tbody>
 <tr class="odd">
 <td>x</td>
-<td>ndarray</td>
+<td>NDArray</td>
 <td><span class="math inline">\(x\)</span></td>
 </tr>
 <tr class="even">
 <td><strong>Returns</strong></td>
-<td><strong>ndarray</strong></td>
+<td><strong>NDArray</strong></td>
 <td><strong><span class="math inline">\(\lambda(x)\)</span></strong></td>
 </tr>
 </tbody>

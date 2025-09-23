@@ -6,17 +6,17 @@
 __all__ = ['losi', 'lam']
 
 # %% ../nbs/01_funcs.ipynb 3
-import numpy as np
-import numpy.typing as npt
+import jax.numpy as jnp
+from jaxtyping import Array, Float
 
 # %% ../nbs/01_funcs.ipynb 5
 def losi(
-    x: npt.NDArray[np.float64] # $x$
-) -> npt.NDArray[np.float64]: # $\sigma(x)=1/(1+ e\\^{-x})$
-  return 1/(1+np.exp(-x))
+    x: Float[Array, ""] # $x$
+) -> Float[Array, ""]: # $\sigma(x)=1/(1+ e\\^{-x})$
+  return 1/(1+jnp.exp(-x))
 
 # %% ../nbs/01_funcs.ipynb 7
 def lam(
-    x: npt.NDArray[np.float64] # $x$
-) -> npt.NDArray[np.float64]: # $\lambda(x)$
+    x: Float[Array, ""] # $x$
+) -> Float[Array, ""]: # $\lambda(x)$
   return (losi(x) - 0.5)/(2*x)

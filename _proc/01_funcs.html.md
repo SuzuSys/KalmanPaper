@@ -14,16 +14,16 @@ $$\sigma(x)=\frac{1}{1+e^{-x}}$$
 
 ---
 
-[source](https://github.com/SuzuSys/KalmanPaper/blob/main/KalmanPaper/simple.py#L13){target="_blank" style="float:right; font-size:smaller"}
+[source](https://github.com/SuzuSys/KalmanPaper/blob/main/KalmanPaper/simple.py#L14){target="_blank" style="float:right; font-size:smaller"}
 
 ### losi
 
->      losi (x:numpy.ndarray[tuple[typing.Any,...],numpy.dtype[numpy.float64]])
+>      losi (x:NDArray[Shape['*,*'],Float])
 
 |    | **Type** | **Details** |
 | -- | -------- | ----------- |
-| x | ndarray | $x$ |
-| **Returns** | **ndarray** | **$\sigma(x)=1/(1+ e\\^{-x})$** |
+| x | NDArray | $x$ |
+| **Returns** | **NDArray** | **$\sigma(x)=1/(1+ e\\^{-x})$** |
 
 
 ## Lambda Function
@@ -31,15 +31,15 @@ $$\lambda(x)=\frac{1}{2x}\left[\sigma(x)-\frac{1}{2}\right]$$
 
 ---
 
-[source](https://github.com/SuzuSys/KalmanPaper/blob/main/KalmanPaper/simple.py#L19){target="_blank" style="float:right; font-size:smaller"}
+[source](https://github.com/SuzuSys/KalmanPaper/blob/main/KalmanPaper/simple.py#L20){target="_blank" style="float:right; font-size:smaller"}
 
 ### lam
 
->      lam (x:numpy.ndarray[tuple[typing.Any,...],numpy.dtype[numpy.float64]])
+>      lam (x:NDArray[Shape['*,*'],Float])
 
 |    | **Type** | **Details** |
 | -- | -------- | ----------- |
-| x | ndarray | $x$ |
-| **Returns** | **ndarray** | **$\lambda(x)$** |
+| x | NDArray | $x$ |
+| **Returns** | **NDArray** | **$\lambda(x)$** |
 
 
