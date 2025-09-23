@@ -16,7 +16,7 @@ def Ptt(
     Ptm:  Float[Array, "N N"], # $\mathbf P_{t/t-1}$
     x:    Float[Array, "N"], # $\mathbf x_t$
     xi:   Float[Array, ""], # $\xi_t$
-) -> Float[Array, "N N"]:
+) -> Float[Array, "N N"]: # $\mathbf P_{t/t}$
   dsigma = (2*sp.lam(xi))**2
   Ptmx = Ptm @ x
   return Ptm - (dsigma / (1 + dsigma * (x @ Ptmx))) * jnp.outer(Ptmx, Ptmx)
@@ -28,7 +28,7 @@ def wtt(
     w: Float[Array, "N"],      # $\hat{\mathbf w}_{t/t-1}$
     x: Float[Array, "N"],      # $\mathbf x_t$
     y: Float[Array, "N"],      # $y_t$
-) -> Float[Array, "N"]:
+) -> Float[Array, "N"]:        # $\hat{\mathbf w}_{t/t}$
   return Ptt_ @ (jsl.cho_solve(jsl.cho_factor(Ptm), w) + (y - 1/2) * x)
 
 # %% ../nbs/VA/00_VA.ipynb 9
@@ -36,19 +36,19 @@ def xipre(
     Ptm: Float[Array, "N N"], # $\mathbf P_{t/t-1}$
     w: Float[Array, "N"],   # $\hat{\mathbf w}_{t/t-1}$
     x: Float[Array, "N"],   # $\mathbf x_t$
-):
+) -> Float[Array, ""]: # $\xi_t$
   return jnp.sqrt(x @ (Ptm + jnp.outer(w,w)) @ x)
 
 # %% ../nbs/VA/00_VA.ipynb 11
 def VApre(
-    N: Int,
-    T: Int,
-    x: Float[Array, "{T} {N}"],
-    y: Float[Array, "{T} {N}"],
-    G: Float[Array, "{N} {N}"],
-    w0: Float[Array, "{N}"],
-    P0: Float[Array, "{N} {N}"],
-) -> Tuple[Float[Array, "{T} {N}"], Float[Array, "{T} {N} {N}"], Float[Array, "{T}"]]:
+    N: Int, # $N$
+    T: Int, # $T$
+    x: Float[Array, "{T} {N}"], # $\{ \mathbf x_t \}_{t=0,\ldots,T-1}$
+    y: Float[Array, "{T} {N}"], # $\{ y_t \}_{t=0,\ldots,T-1}$
+    G: Float[Array, "{N} {N}"], # $\boldsymbol\Gamma$
+    w0: Float[Array, "{N}"], # $\hat{\mathbf w}_{0/-1}$
+    P0: Float[Array, "{N} {N}"], # $\mathbf P_{0/-1}$
+) -> Tuple[Float[Array, "{T} {N}"], Float[Array, "{T} {N} {N}"], Float[Array, "{T}"]]: # $\{\hat{\mathbf w}_{t/t}\}_{t=0,\ldots,T-1},\{\mathbf P_{t/t}\}_{t=0,\ldots,T-1},\{\xi_t\}_{t=0,\ldots,T-1}$
     def step(carry, inputs):
         Ptm, wtm = carry
         xt, yt = inputs

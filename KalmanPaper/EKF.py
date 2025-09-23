@@ -13,7 +13,7 @@ from typing import Tuple
 # %% ../nbs/EKF/00_EKF.ipynb 15
 def dxlosi(
     x: Float[Array, ""] # $x$
-) -> Float[Array, ""]: # $\lambda(x)$
+) -> Float[Array, ""]: # $(d/dx)\sigma(x)$
   return sp.losi(x) * (1 - sp.losi(x))
 
 # %% ../nbs/EKF/00_EKF.ipynb 17
@@ -21,7 +21,7 @@ def Ptt(
     Ptm: Float[Array, "N N"], # $\mathbf P_{t/t-1}$
     w: Float[Array, "N"],   # $\hat{\mathbf w}_{t/t-1}$
     x: Float[Array, "N"],   # $\mathbf x_t$
-) -> Float[Array, "N N"]:
+) -> Float[Array, "N N"]:   # $\mathbf P_{t/t}$
   dsigma = dxlosi(w @ x)
   Ptmx = Ptm @ x
   return Ptm - (dsigma / (1 + dsigma * (x @ Ptmx))) * jnp.outer(Ptmx, Ptmx)
@@ -32,21 +32,21 @@ def wtt(
     w: Float[Array, "N"],   # $\hat{\mathbf w}_{t/t-1}$
     x: Float[Array, "N"],   # $\mathbf x_t$
     y: Float[Array, "N"],   # $y_t$
-) -> Float[Array, "N"]:
+) -> Float[Array, "N"]: # $\hat{\mathbf w}_{t/t}$
   dsigma = dxlosi(w @ x)
   Ptmx = Ptm @ x
   return w + ((y - sp.losi(w @ x)) / (1 + dsigma * (x @ Ptmx))) * Ptmx
 
 # %% ../nbs/EKF/00_EKF.ipynb 21
 def EKF(
-    N: Int,
-    T: Int,
-    x: Float[Array, "{T} {N}"],
-    y: Float[Array, "{T} {N}"],
-    G: Float[Array, "{N} {N}"],
-    w0: Float[Array, "{N}"],
-    P0: Float[Array, "{N} {N}"],
-) -> Tuple[Float[Array, "{T} {N}"], Float[Array, "{T} {N} {N}"]]:
+    N: Int, # $N$
+    T: Int, # $T$
+    x: Float[Array, "{T} {N}"], # $\{ \mathbf x_t \}_{t=0,\ldots,T-1}$
+    y: Float[Array, "{T} {N}"], # $\{ y_t \}_{t=0,\ldots,T-1}$
+    G: Float[Array, "{N} {N}"], # $\boldsymbol\Gamma$
+    w0: Float[Array, "{N}"], # $\hat{\mathbf w}_{0/-1}$
+    P0: Float[Array, "{N} {N}"], # $\mathbf P_{0/-1}$
+) -> Tuple[Float[Array, "{T} {N}"], Float[Array, "{T} {N} {N}"]]: # $\{\hat{\mathbf w}_{t/t}\}_{t=0,\ldots,T-1},\{\mathbf P_{t/t}\}_{t=0,\ldots,T-1}$
     def step(carry, inputs):
         Ptm, wtm = carry
         xt, yt = inputs
