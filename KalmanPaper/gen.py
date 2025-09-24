@@ -9,15 +9,17 @@ __all__ = ['gen_w', 'gen_xy']
 import jax.numpy as jnp
 import jax.random as jrd
 import jax.lax as lax
+import jax
 from jaxtyping import Array, Float, Int, PRNGKeyArray
-from . import simple as sp
 from typing import Tuple
+from functools import partial
 
 # %% ../nbs/Gen/00_Gen.ipynb 4
+@partial(jax.jit, static_argnames=['N', 'T'])
 def gen_w(
     key: PRNGKeyArray,
-    N: Int, # $N$
-    T: Int, # $T$
+    N: int, # $N$
+    T: int, # $T$
     G: Float[Array, "{N} {N}"], # $\boldsymbol\Gamma$
     w0: Float[Array, "{N}"], # $\hat{\mathbf w}_{0/-1}$
 ) -> Float[Array, "{T} {N}"]: # $\{\hat{\mathbf w}_{t/t}\}_{t=0,\ldots,T-1}$
@@ -29,10 +31,11 @@ def gen_w(
     return W
 
 # %% ../nbs/Gen/00_Gen.ipynb 5
+@partial(jax.jit, static_argnames=['N', 'T'])
 def gen_xy(
     key: PRNGKeyArray,
-    N: Int, # $N$
-    T: Int, # $T$
+    N: int, # $N$
+    T: int, # $T$
     Sigma: Float[Array, "{N} {N}"], # $\boldsymbol\Sigma$
     W: Float[Array, "{T} {N}"], # $\{\hat{\mathbf w}_{t/t}\}_{t=0,\ldots,T-1}$
     propy1: Float[Array, ""]  # $p(y=1)$
@@ -48,7 +51,7 @@ def gen_xy(
 
     # Compute per-time means: mu_t = 0.5 * Sigma @ W[t]
     # Vectorized: W @ Sigma.T yields (T,N) where row t is W[t] @ Sigma.T == (Sigma @ W[t])^T
-    sign = 1 - 2 * Y
+    sign = 2 * Y - 1
     mu = 0.5 * ((W * sign[:, None]) @ Sigma.T)  # shape (T, N)
 
     # Standard normal samples z_t ~ N(0, I) stacked to shape (T, N)

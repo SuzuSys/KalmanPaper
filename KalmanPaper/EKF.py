@@ -6,9 +6,11 @@ __all__ = ['dxlosi', 'Ptt', 'wtt', 'EKF']
 # %% ../nbs/EKF/00_EKF.ipynb 13
 import jax.numpy as jnp
 import jax.lax as lax
+import jax
 from jaxtyping import Array, Float, Int
 from . import simple as sp
 from typing import Tuple
+from functools import partial
 
 # %% ../nbs/EKF/00_EKF.ipynb 15
 def dxlosi(
@@ -17,6 +19,7 @@ def dxlosi(
   return sp.losi(x) * (1 - sp.losi(x))
 
 # %% ../nbs/EKF/00_EKF.ipynb 17
+@jax.jit
 def Ptt(
     Ptm: Float[Array, "N N"], # $\mathbf P_{t/t-1}$
     w: Float[Array, "N"],   # $\hat{\mathbf w}_{t/t-1}$
@@ -27,6 +30,7 @@ def Ptt(
   return Ptm - (dsigma / (1 + dsigma * (x @ Ptmx))) * jnp.outer(Ptmx, Ptmx)
 
 # %% ../nbs/EKF/00_EKF.ipynb 19
+@jax.jit
 def wtt(
     Ptm: Float[Array, "N N"], # $\mathbf P_{t/t-1}$
     w: Float[Array, "N"],   # $\hat{\mathbf w}_{t/t-1}$
@@ -38,9 +42,10 @@ def wtt(
   return w + ((y - sp.losi(w @ x)) / (1 + dsigma * (x @ Ptmx))) * Ptmx
 
 # %% ../nbs/EKF/00_EKF.ipynb 21
+@partial(jax.jit, static_argnames=['N', 'T'])
 def EKF(
-    N: Int, # $N$
-    T: Int, # $T$
+    N: int, # $N$
+    T: int, # $T$
     x: Float[Array, "{T} {N}"], # $\{ \mathbf x_t \}_{t=0,\ldots,T-1}$
     y: Float[Array, "{T} {N}"], # $\{ y_t \}_{t=0,\ldots,T-1}$
     G: Float[Array, "{N} {N}"], # $\boldsymbol\Gamma$

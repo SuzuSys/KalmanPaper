@@ -7,31 +7,36 @@ __all__ = ['Ptt', 'wtt', 'xipre', 'VApre']
 import jax.numpy as jnp
 import jax.lax as lax
 import jax.scipy.linalg as jsl
+import jax
 from jaxtyping import Array, Float, Int
 from . import simple as sp
 from typing import Tuple
+from functools import partial
 
 # %% ../nbs/VA/00_VA.ipynb 5
+@jax.jit
 def Ptt(
     Ptm:  Float[Array, "N N"], # $\mathbf P_{t/t-1}$
     x:    Float[Array, "N"], # $\mathbf x_t$
     xi:   Float[Array, ""], # $\xi_t$
 ) -> Float[Array, "N N"]: # $\mathbf P_{t/t}$
-  dsigma = (2*sp.lam(xi))**2
+  dsigma = 2*sp.lam(xi)
   Ptmx = Ptm @ x
   return Ptm - (dsigma / (1 + dsigma * (x @ Ptmx))) * jnp.outer(Ptmx, Ptmx)
 
 # %% ../nbs/VA/00_VA.ipynb 7
+@jax.jit
 def wtt(
     Ptm: Float[Array, "N N"],  # $\mathbf P_{t/t-1}$
     Ptt_: Float[Array, "N N"], # $\mathbf P_{t/t}$
     w: Float[Array, "N"],      # $\hat{\mathbf w}_{t/t-1}$
     x: Float[Array, "N"],      # $\mathbf x_t$
-    y: Float[Array, "N"],      # $y_t$
+    y: Float[Array, ""],      # $y_t$
 ) -> Float[Array, "N"]:        # $\hat{\mathbf w}_{t/t}$
   return Ptt_ @ (jsl.cho_solve(jsl.cho_factor(Ptm), w) + (y - 1/2) * x)
 
 # %% ../nbs/VA/00_VA.ipynb 9
+@jax.jit
 def xipre(
     Ptm: Float[Array, "N N"], # $\mathbf P_{t/t-1}$
     w: Float[Array, "N"],   # $\hat{\mathbf w}_{t/t-1}$
@@ -40,9 +45,10 @@ def xipre(
   return jnp.sqrt(x @ (Ptm + jnp.outer(w,w)) @ x)
 
 # %% ../nbs/VA/00_VA.ipynb 11
+@partial(jax.jit, static_argnames=['N', 'T'])
 def VApre(
-    N: Int, # $N$
-    T: Int, # $T$
+    N: int, # $N$
+    T: int, # $T$
     x: Float[Array, "{T} {N}"], # $\{ \mathbf x_t \}_{t=0,\ldots,T-1}$
     y: Float[Array, "{T} {N}"], # $\{ y_t \}_{t=0,\ldots,T-1}$
     G: Float[Array, "{N} {N}"], # $\boldsymbol\Gamma$
@@ -52,7 +58,7 @@ def VApre(
     def step(carry, inputs):
         Ptm, wtm = carry
         xt, yt = inputs
-        xit = xipre(Ptm, wtm, x)
+        xit = xipre(Ptm, wtm, xt)
         Ptt_ = Ptt(Ptm, xt, xit)
         wtt_ = wtt(Ptm, Ptt_, wtm, xt, yt)
         return (Ptt_ + G, wtt_), (wtt_, Ptt_, xit)
