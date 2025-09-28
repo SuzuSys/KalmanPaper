@@ -11,6 +11,8 @@ website:
       - section: Exp
         contents:
           - Exp\00_Exp.ipynb
+          - Exp\01_Comp.ipynb
+          - Exp\02_keybatch.ipynb
       - section: Gen
         contents:
           - Gen\00_Gen.ipynb

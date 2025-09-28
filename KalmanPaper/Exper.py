@@ -6,12 +6,11 @@
 __all__ = ['exper']
 
 # %% ../nbs/Exp/00_Exp.ipynb 3
-import numpy as np
 import jax.numpy as jnp
 import jax.random as jrd
 import jax
 from jaxtyping import Float, Int, Array, PRNGKeyArray
-from . import gen, EKF, VA
+from . import gen, EKF, VA, simple
 from matplotlib import pyplot as plt
 from typing import Tuple
 from functools import partial
@@ -26,15 +25,14 @@ def exper(
     w0: Float[Array, "{N}"],
     Sigma: Float[Array, "{N} {N}"],
     P0: Float[Array, "{N} {N}"], 
-    propy1: Float
+    propy1: Float,
+    epsilon: Float =2**(-16)
 ):
   key_w, key_xy = jrd.split(key, 2)
   W = gen.gen_w(key_w, N, T, G, w0)
   X, Y = gen.gen_xy(key_xy, N, T, Sigma, W, propy1)
   Wtt_EKF, Ptt_EKF = EKF.EKF(N, T, X, Y, G, w0, P0)
   Wtt_VA, Ptt_VA, Xit_VA = VA.VApre(N, T, X, Y, G, w0, P0)
-  # W_norm = jnp.sqrt(jnp.sum(W**2, axis=1))
-  # RMS_Wtt_EKF = jnp.sqrt(jnp.sum((W - Wtt_EKF)**2, axis=1)) # shape: (T:)
-  # RMS_Wtt_VA = jnp.sqrt(jnp.sum((W - Wtt_VA)**2, axis=1))
+  Wtt_EM, Ptt_EM, Xit_EM = VA.VAEM(N, T, X, Y, G, w0, P0, epsilon)
   
-  return X, Y, W, (Wtt_EKF, Ptt_EKF), (Wtt_VA, Ptt_VA, Xit_VA)
+  return X, Y, W, (Wtt_EKF, Ptt_EKF), (Wtt_VA, Ptt_VA, Xit_VA), (Wtt_EM, Ptt_EM, Xit_EM)

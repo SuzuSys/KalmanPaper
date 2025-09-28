@@ -38,7 +38,7 @@ def gen_xy(
     T: int, # $T$
     Sigma: Float[Array, "{N} {N}"], # $\boldsymbol\Sigma$
     W: Float[Array, "{T} {N}"], # $\{\hat{\mathbf w}_{t/t}\}_{t=0,\ldots,T-1}$
-    propy1: Float[Array, ""]  # $p(y=1)$
+    propy1: Float[Array, ""],  # $p(y=1)$
 ) -> Tuple[Float[Array, "{T} {N}"], Float[Array, "{T}"]]:
     # split key for independent draws
     key_y, key_z = jrd.split(key, 2)
