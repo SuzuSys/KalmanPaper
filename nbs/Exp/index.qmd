@@ -1,0 +1,13 @@
+---
+order: 1
+title: 実験関数
+listing:
+  fields: [title, description]
+  type: table
+  sort:
+    - "filename"
+  sort-ui: false
+  filter-ui: false
+---
+
+実験用の関数等。Jax による並列化など。

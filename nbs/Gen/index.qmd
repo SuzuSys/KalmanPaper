@@ -1,0 +1,13 @@
+---
+order: 1
+title: データ生成
+listing:
+  fields: [title, description]
+  type: table
+  sort:
+    - "filename"
+  sort-ui: false
+  filter-ui: false
+---
+
+データ生成や実データの整形等。

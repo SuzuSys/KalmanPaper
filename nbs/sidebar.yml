@@ -2,20 +2,13 @@ website:
   sidebar:
     contents:
       - index.ipynb
-      - 00_template.ipynb
       - 01_funcs.ipynb
       - 02_common.ipynb
-      - section: EKF
-        contents:
-          - EKF\00_EKF.ipynb
-      - section: Exp
-        contents:
-          - Exp\00_Exp.ipynb
-          - Exp\01_Comp.ipynb
-          - Exp\02_keybatch.ipynb
-      - section: Gen
-        contents:
-          - Gen\00_Gen.ipynb
-      - section: VA
-        contents:
-          - VA\00_VA.ipynb
+      - section: 非線形カルマンフィルタ
+        contents: EKF/*
+      - section: 変分近似
+        contents: VA/*
+      - section: データ生成
+        contents: Gen/*
+      - section: 実験場
+        contents: Exp/*

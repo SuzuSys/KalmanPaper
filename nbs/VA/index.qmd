@@ -1,0 +1,13 @@
+---
+order: 1
+title: 変分近似
+listing:
+  fields: [title, description]
+  type: table
+  sort:
+    - "filename"
+  sort-ui: false
+  filter-ui: false
+---
+
+変分近似を取り入れた手法。

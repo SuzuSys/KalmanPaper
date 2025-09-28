@@ -15,6 +15,9 @@ website:
   navbar:
     background: primary
     search: true
+    right:
+      - icon: github
+        href: "https://github.com/SuzuSys/KalmanPaper"
   sidebar:
     style: floating
 
