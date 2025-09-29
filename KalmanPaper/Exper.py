@@ -19,14 +19,14 @@ from functools import partial
 @partial(jax.jit, static_argnames=['N', 'T'])
 def exper(
     key: PRNGKeyArray,
-    N: int,
-    T: int,
-    G: Float[Array, "{N} {N}"],
-    w0: Float[Array, "{N}"],
-    Sigma: Float[Array, "{N} {N}"],
-    P0: Float[Array, "{N} {N}"], 
-    propy1: Float,
-    epsilon: Float =2**(-16)
+    N: int, # $N$
+    T: int, # $T$
+    G: Float[Array, "{N} {N}"], # $\boldsymbol\Gamma$
+    w0: Float[Array, "{N}"], # $\hat{\mathbf w}_{0/-1}$
+    Sigma: Float[Array, "{N} {N}"], # $\boldsymbol\Sigma$
+    P0: Float[Array, "{N} {N}"], # $\mathbf P_{0/-1}$
+    propy1: Float, # $p(y=1)$
+    epsilon: Float =2**(-16) # $\epsilon\ge |\xi\\^{\text{new}}_t-\xi\\^{\text{old}}_t|$
 ):
   key_w, key_xy = jrd.split(key, 2)
   W = gen.gen_w(key_w, N, T, G, w0)
