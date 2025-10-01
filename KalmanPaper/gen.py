@@ -10,10 +10,10 @@ import jax.numpy as jnp
 import jax.random as jrd
 import jax.lax as lax
 import jax
-from jaxtyping import Array, Float, Int, PRNGKeyArray
-from typing import Tuple
+from jaxtyping import Array, Float, PRNGKeyArray
+from typing import Tuple, NamedTuple
 from functools import partial
-from . import simple as sp
+from KalmanPaper import simple as sp
 
 # %% ../nbs/Gen/00_Gen.ipynb 4
 @partial(jax.jit, static_argnames=['N', 'T'])
@@ -29,6 +29,7 @@ def gen_w(
     $$\mathbf w_{t}\sim\mathcal N(\mathbf w_t\mid\mathbf w_{t-1},\boldsymbol\Gamma)$$
     *$\!$"""
     keys = jrd.split(key, T)
+
     def step(wtpre, key):
         wt = jrd.multivariate_normal(key, wtpre, G)
         return wt, wt
@@ -43,11 +44,10 @@ def gen_xy(
     T: int, # $T$
     Sigma: Float[Array, "{N} {N}"], # $\boldsymbol\Sigma$
     W: Float[Array, "{T} {N}"], # $\{\mathbf w_t\}_{t=0,\ldots,T-1}$
-    propy1: Float[Array, ""],  # $\text{p}_{y=1}=p(y=1)$
 ) -> Tuple[Float[Array, "{T} {N}"], Float[Array, "{T}"]]: # $\{\mathbf x_t\}_{t=0,\ldots,T-1}, \{y_t\}_{t=0,\ldots,T-1}$
     r"""$\!$*
     観測変数 $\{\mathbf x_t\}_{t=0,\ldots,T-1}, \{y_t\}_{t=0,\ldots,T-1}$ の生成
-    $$y_t\sim\text{Bern}(y_t\mid\text{p}_{y=1})$$
+    $$y_t\sim\text{Bern}(y_t\mid 1/2)$$
     $$\boldsymbol\Sigma\mathbf w_t=2\boldsymbol\mu_{1,t}$$
     $$\boldsymbol\mu_{2,t}=-\boldsymbol\mu_{1,t}$$
     $$
@@ -62,7 +62,7 @@ def gen_xy(
     key_y, key_z = jrd.split(key, 2)
 
     # Bernoulli draws (returns bool) -> convert to float
-    Y = jrd.bernoulli(key_y, p=propy1, shape=(T,)).astype(jnp.float32)  # shape (T,)
+    Y = jrd.bernoulli(key_y, p=0.5, shape=(T,)).astype(jnp.float32)  # shape (T,)
 
     # Cholesky of Sigma (assumes positive-definite). Sigma shape (N,N)
     L = jnp.linalg.cholesky(Sigma)  # lower-triangular, (N,N)

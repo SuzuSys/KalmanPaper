@@ -6,6 +6,7 @@
 __all__ = ['exper']
 
 # %% ../nbs/Exp/00_Exp.ipynb 3
+#| eval: false
 import jax.numpy as jnp
 import jax.random as jrd
 import jax
@@ -16,6 +17,7 @@ from typing import Tuple
 from functools import partial
 
 # %% ../nbs/Exp/00_Exp.ipynb 4
+#| eval: false
 @partial(jax.jit, static_argnames=['N', 'T'])
 def exper(
     key: PRNGKeyArray,
@@ -25,7 +27,7 @@ def exper(
     w0: Float[Array, "{N}"], # $\hat{\mathbf w}_{0/-1}$
     Sigma: Float[Array, "{N} {N}"], # $\boldsymbol\Sigma$
     P0: Float[Array, "{N} {N}"], # $\mathbf P_{0/-1}$
-    propy1: Float, # $p(y=1)$
+    propy1: Float, # $\text{p}_{y=1}p(y=1)$
     epsilon: Float =2**(-16) # $\epsilon\ge |\xi\\^{\text{new}}_t-\xi\\^{\text{old}}_t|$
 ):
   key_w, key_xy = jrd.split(key, 2)

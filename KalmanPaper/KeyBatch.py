@@ -5,7 +5,8 @@
 # %% auto 0
 __all__ = []
 
-# %% ../nbs/Exp/02_keybatch.ipynb 3
+# %% ../nbs/Exp/02_keybatch.ipynb 4
+#| eval: false
 import numpy as np
 import jax.numpy as jnp
 import jax.random as jrd

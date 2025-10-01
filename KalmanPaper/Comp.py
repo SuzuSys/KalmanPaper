@@ -5,7 +5,8 @@
 # %% auto 0
 __all__ = ['RMS', 'losi_error']
 
-# %% ../nbs/Exp/01_Comp.ipynb 3
+# %% ../nbs/Exp/01_Comp.ipynb 4
+#| eval: false
 import jax.numpy as jnp
 import jax.random as jrd
 import jax
@@ -15,7 +16,8 @@ from matplotlib import pyplot as plt
 from typing import Tuple
 from functools import partial
 
-# %% ../nbs/Exp/01_Comp.ipynb 4
+# %% ../nbs/Exp/01_Comp.ipynb 5
+#| eval: false
 @partial(jax.jit, static_argnames=['N', 'T'])
 def RMS(
     key: PRNGKeyArray,
@@ -36,7 +38,8 @@ def RMS(
   
   return W_norm, RMS_Wtt_EKF, RMS_Wtt_VA, RMS_Wtt_EM
 
-# %% ../nbs/Exp/01_Comp.ipynb 7
+# %% ../nbs/Exp/01_Comp.ipynb 8
+#| eval: false
 @partial(jax.jit, static_argnames=['N', 'T'])
 def losi_error(
     key: PRNGKeyArray,
