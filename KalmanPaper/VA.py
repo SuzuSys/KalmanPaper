@@ -14,7 +14,6 @@ from jaxtyping import Array, Float, Int
 from KalmanPaper import simple as sp
 from typing import Tuple, NamedTuple
 from functools import partial
-from dataclasses import dataclass
 
 # %% ../nbs/VA/00_VA.ipynb 4
 def lam(
@@ -171,8 +170,7 @@ def VAEM(
     $$\xi_t=\sqrt{\mathbf x_t^T\left(\mathbf P_{t/t}+\hat{\mathbf w}_{t/t}\hat{\mathbf w}_{t/t}^T\right)\mathbf x_t}$$
     *$\!$"""
 
-    @dataclass
-    class State:
+    class State(NamedTuple):
         xit_pr: Float[Array, ""]
         xit_af: Float[Array, ""]
         Ptt_: Float[Array, "{N} {N}"]
@@ -184,12 +182,11 @@ def VAEM(
         i: Int[Array, ""]
 
     def inner_iter(s: State) -> State:
-        s.xit_pr = s.xit_af
-        s.xit_af = xit(s.Ptt_, s.wtt_, s.xt)
-        s.Ptt_ = Ptt(s.Ptm, s.xt, s.xit_af)
-        s.wtt_ = wtt(s.Ptm, s.Ptt_, s.wtm, s.xt, s.yt)
-        s.i += 1
-        return s
+        xit_pr = s.xit_af
+        xit_af = xit(s.Ptt_, s.wtt_, s.xt)
+        Ptt_ = Ptt(s.Ptm, s.xt, s.xit_af)
+        wtt_ = wtt(s.Ptm, s.Ptt_, s.wtm, s.xt, s.yt)
+        return State(xit_pr, xit_af, Ptt_, wtt_, s.Ptm, s.wtm, s.xt, s.yt, s.i + 1)
 
     def cond_fun(s: State):
         return jnp.logical_and(
@@ -228,7 +225,7 @@ def VAEM(
             wtm,
             xt,
             yt,
-            jnp.array(0),
+            jnp.array(0, dtype=jnp.int32),
         )
 
         s = lax.while_loop(cond_fun, inner_iter, init_state)

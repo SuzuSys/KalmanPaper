@@ -10,5 +10,7 @@ website:
         contents: VA/*
       - section: データ生成
         contents: Gen/*
-      - section: 実験場
+      - section: 実験関数
         contents: Exp/*
+      - section: 分析データ
+        contents: AnalysisStorage/*

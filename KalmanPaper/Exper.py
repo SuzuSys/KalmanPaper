@@ -6,18 +6,16 @@
 __all__ = ['exper']
 
 # %% ../nbs/Exp/00_Exp.ipynb 3
-#| eval: false
 import jax.numpy as jnp
 import jax.random as jrd
 import jax
 from jaxtyping import Float, Int, Array, PRNGKeyArray
-from . import gen, EKF, VA, simple
+from KalmanPaper import gen00, EKF, VA, simple
 from matplotlib import pyplot as plt
 from typing import Tuple
 from functools import partial
 
 # %% ../nbs/Exp/00_Exp.ipynb 4
-#| eval: false
 @partial(jax.jit, static_argnames=['N', 'T'])
 def exper(
     key: PRNGKeyArray,

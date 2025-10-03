@@ -1,0 +1,13 @@
+---
+order: 1
+title: 分析データ
+listing:
+  fields: [title, description]
+  type: table
+  sort:
+    - "filename"
+  sort-ui: false
+  filter-ui: false
+---
+
+分析データの全て。
