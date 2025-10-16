@@ -29,6 +29,7 @@ d = { 'settings': { 'branch': 'main',
             'KalmanPaper.simple': { 'KalmanPaper.simple.dxlosi': ('funcs.html#dxlosi', 'KalmanPaper/simple.py'),
                                     'KalmanPaper.simple.fill_empty_md_table_cells': ( 'funcs.html#fill_empty_md_table_cells',
                                                                                       'KalmanPaper/simple.py'),
+                                    'KalmanPaper.simple.hex_to_rgb': ('funcs.html#hex_to_rgb', 'KalmanPaper/simple.py'),
                                     'KalmanPaper.simple.losi': ('funcs.html#losi', 'KalmanPaper/simple.py'),
                                     'KalmanPaper.simple.reshow_doc': ('funcs.html#reshow_doc', 'KalmanPaper/simple.py'),
                                     'KalmanPaper.simple.rewrite_nt': ('funcs.html#rewrite_nt', 'KalmanPaper/simple.py')}}}
