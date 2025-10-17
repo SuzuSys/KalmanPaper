@@ -94,7 +94,7 @@ def VApre(
     N: int, # $N$
     T: int, # $T$
     x: Float[Array, "{T} {N}"], # $\{ \mathbf x_t \}_{t=0,\ldots,T-1}$
-    y: Float[Array, "{T} {N}"], # $\{ y_t \}_{t=0,\ldots,T-1}$
+    y: Float[Array, "{T}"], # $\{ y_t \}_{t=0,\ldots,T-1}$
     G: Float[Array, "{N} {N}"], # $\boldsymbol\Gamma$
     w0: Float[Array, "{N}"], # $\hat{\mathbf w}_{0/-1}$
     P0: Float[Array, "{N} {N}"], # $\mathbf P_{0/-1}$
