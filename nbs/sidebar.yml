@@ -4,6 +4,7 @@ website:
       - index.ipynb
       - 01_funcs.ipynb
       - 02_common.ipynb
+      - 03_AnalysisNote.ipynb
       - section: 非線形カルマンフィルタ
         contents: EKF/*
       - section: 変分近似
