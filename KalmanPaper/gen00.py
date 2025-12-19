@@ -93,9 +93,7 @@ def gen_xy_logistic(
     観測変数 $\{\mathbf x_t\}_{t=0,\ldots,T-1}, \{y_t\}_{t=0,\ldots,T-1}$ の生成
 
     $$\mathbf x_t \sim \mathcal N(\mathbf 0, \boldsymbol\Sigma)$$
-    $$y_t \sim \text{Bern}\bigl(\sigma(\mathbf x_t^\mathsf T \mathbf w_t)\bigr)$$
-
-    ただし $\sigma(u) = 1 / (1 + e^{-u})$ はロジスティックシグモイド関数。
+    $$y_t \sim \text{Bern}\bigl(y_t\mid\sigma(\mathbf x_t^\mathsf T \mathbf w_t)\bigr)$$
     *$\!$"""
     # split key for independent draws
     key_x, key_y = jrd.split(key, 2)
