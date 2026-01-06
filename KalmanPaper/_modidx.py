@@ -33,4 +33,7 @@ d = { 'settings': { 'branch': 'main',
                                     'KalmanPaper.simple.hex_to_rgb': ('funcs.html#hex_to_rgb', 'KalmanPaper/simple.py'),
                                     'KalmanPaper.simple.losi': ('funcs.html#losi', 'KalmanPaper/simple.py'),
                                     'KalmanPaper.simple.reshow_doc': ('funcs.html#reshow_doc', 'KalmanPaper/simple.py'),
-                                    'KalmanPaper.simple.rewrite_nt': ('funcs.html#rewrite_nt', 'KalmanPaper/simple.py')}}}
+                                    'KalmanPaper.simple.rewrite_nt': ('funcs.html#rewrite_nt', 'KalmanPaper/simple.py')},
+            'KalmanPaper.wEXP_PVA': { 'KalmanPaper.wEXP_PVA.wEXP_PVA': ('wEXP_PVA/wexp_pva.html#wexp_pva', 'KalmanPaper/wEXP_PVA.py'),
+                                      'KalmanPaper.wEXP_PVA.wEXP_PVA_out': ( 'wEXP_PVA/wexp_pva.html#wexp_pva_out',
+                                                                             'KalmanPaper/wEXP_PVA.py')}}}
