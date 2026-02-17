@@ -1,0 +1,13 @@
+---
+order: 1
+title: リグレット最小化
+listing:
+  fields: [title, description]
+  type: table
+  sort:
+    - "filename"
+  sort-ui: false
+  filter-ui: false
+---
+
+リグレット最小化。
