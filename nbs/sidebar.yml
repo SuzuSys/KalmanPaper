@@ -9,6 +9,10 @@ website:
         contents: EKF/*
       - section: 変分近似
         contents: VA/*
+      - section: リグレット最小化
+        contents: MinimizeRegrex/*
+      - section: EKFとVAの合成
+        contents: wEXP_PVA/*
       - section: データ生成
         contents: Gen/*
       - section: 実験関数
