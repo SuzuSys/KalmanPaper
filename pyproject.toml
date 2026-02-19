@@ -12,7 +12,18 @@ license = {text = "Apache-2.0"}
 authors = [{name = "SuzuSys", email = "sigmatics@outlook.jp"}]
 keywords = ['nbdev', 'jupyter', 'notebook', 'python']
 classifiers = ["Natural Language :: English", "Intended Audience :: Developers", "Development Status :: 3 - Alpha", "Programming Language :: Python :: 3", "Programming Language :: Python :: 3 :: Only"]
-dependencies = ['matplotlib', 'numpy', 'jax', 'jaxtyping', 'pandas', 'h5py', 'plotly', 'nbformat', 'dash', 'nbclient']
+dependencies = [
+    "matplotlib>=3.9.4",
+    "numpy>=2.0.2",
+    "jax>=0.4.30",
+    "jaxtyping>=0.2.36",
+    "pandas>=2.3.3",
+    "h5py>=3.14.0",
+    "plotly>=6.5.2",
+    "nbformat>=5.10.4",
+    "dash>=4.0.0",
+    "nbclient>=0.10.2",
+]
 
 [project.urls]
 Repository = "https://github.com/SuzuSys/KalmanPaper"
@@ -29,3 +40,8 @@ include = ["KalmanPaper"]
 
 [tool.nbdev]
 custom_sidebar = true
+
+[dependency-groups]
+dev = [
+    "nbdev>=2.4.6",
+]
