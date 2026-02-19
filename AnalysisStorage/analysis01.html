@@ -1,0 +1,3243 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.27">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="実データ 01_Data/ に対して適用する">
+
+<title>分析01 – KalmanPaper</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-ed96de9b727972fe78a7b5d16c58bf87.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-baedc78cbf92349237790bf011c153e8.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+<link rel="stylesheet" href="../styles.css">
+<meta property="og:title" content="分析01 – KalmanPaper">
+<meta property="og:description" content="実データ 01_Data/ に対して適用する">
+<meta property="og:image" content="https://SuzuSys.github.io/KalmanPaper/AnalysisStorage/01_Analysis01_files/figure-html/cell-4-output-1.png">
+<meta property="og:site_name" content="KalmanPaper">
+<meta property="og:image:height" content="448">
+<meta property="og:image:width" content="547">
+<meta name="twitter:title" content="分析01 – KalmanPaper">
+<meta name="twitter:description" content="実データ 01_Data/ に対して適用する">
+<meta name="twitter:image" content="https://SuzuSys.github.io/KalmanPaper/AnalysisStorage/01_Analysis01_files/figure-html/cell-4-output-1.png">
+<meta name="twitter:image-height" content="448">
+<meta name="twitter:image-width" content="547">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">KalmanPaper</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/SuzuSys/KalmanPaper"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../AnalysisStorage/index.html">分析データ</a></li><li class="breadcrumb-item"><a href="../AnalysisStorage/analysis01.html">分析01</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">KalmanPaper</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../funcs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">簡単な関数等</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../common.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">共通概念・表記</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../analysisnote.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">実験ノート</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../EKF/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">非線形カルマンフィルタ</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../EKF/summary.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">非線形カルマンフィルタの概要</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../EKF/ekf.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Extended Kalman Filter</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../VA/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">変分近似</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../VA/summary.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">変分近似の概要</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../VA/va.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Variational Approximation</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../MinimizeRegrex/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">リグレット最小化</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../MinimizeRegrex/summary.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Regret 最小化の概要</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../wEXP_PVA/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">EKFとVAの合成</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../wEXP_PVA/wexp_pva.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">w:EXP, P:VA</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../Gen/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">データ生成</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Gen/gen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">00_Gen</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../Exp/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">実験関数</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Exp/exp.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">実験</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Exp/comp.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">評価</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Exp/keybatch.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">key によるバッチ化</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Exp/expfunc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">実験関数</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../AnalysisStorage/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">分析データ</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../AnalysisStorage/analysis00.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">分析00</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../AnalysisStorage/analysis01.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">分析01</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../AnalysisStorage/analysis02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">分析02</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#dow_jones_index" id="toc-dow_jones_index" class="nav-link active" data-scroll-target="#dow_jones_index">dow_jones_index</a>
+  <ul class="collapse">
+  <li><a href="#true-上がるfalse-下がる" id="toc-true-上がるfalse-下がる" class="nav-link" data-scroll-target="#true-上がるfalse-下がる">True: 上がる、False: 下がる</a></li>
+  </ul></li>
+  </ul>
+<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="analysis01.html.md"><i class="bi bi-file-code"></i>CommonMark</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../AnalysisStorage/index.html">分析データ</a></li><li class="breadcrumb-item"><a href="../AnalysisStorage/analysis01.html">分析01</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">分析01</h1>
+</div>
+
+<div>
+  <div class="description">
+    実データ <code>01_Data/</code> に対して適用する
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<section id="dow_jones_index" class="level2">
+<h2 class="anchored" data-anchor-id="dow_jones_index">dow_jones_index</h2>
+<p>https://archive.ics.uci.edu/dataset/312/dow+jones+index</p>
+<p>This dataset contains weekly data for the Dow Jones Industrial Index. It has been used in computational investing research.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 61%">
+<col style="width: 38%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">項目名</th>
+<th style="text-align: left;">説明</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>quarter</strong></td>
+<td style="text-align: left;">年間の四半期（1 = 1〜3月、2 = 4〜6月）</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>stock</strong></td>
+<td style="text-align: left;">株式のシンボル（ティッカーコード）</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>date</strong></td>
+<td style="text-align: left;">週の最終営業日（通常は金曜日）</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>open</strong></td>
+<td style="text-align: left;">週の始めの株価（始値）</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>high</strong></td>
+<td style="text-align: left;">週の最高株価</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>low</strong></td>
+<td style="text-align: left;">週の最安株価</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>close</strong></td>
+<td style="text-align: left;">週の終わりの株価（終値）</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>volume</strong></td>
+<td style="text-align: left;">その週に取引された株式の出来高（取引株数）</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>percent_change_price</strong></td>
+<td style="text-align: left;">週を通しての株価変動率（％）</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>percent_change_volume_over_last_week</strong></td>
+<td style="text-align: left;">前週と比較した出来高の変化率（％）</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>previous_weeks_volume</strong></td>
+<td style="text-align: left;">前週の出来高（取引株数）</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>next_weeks_open</strong></td>
+<td style="text-align: left;">翌週の始値</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>next_weeks_close</strong></td>
+<td style="text-align: left;">翌週の終値</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>percent_change_next_weeks_price</strong></td>
+<td style="text-align: left;">翌週の株価変動率（％）</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>days_to_next_dividend</strong></td>
+<td style="text-align: left;">次回配当までの日数</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>percent_return_next_dividend</strong></td>
+<td style="text-align: left;">次回配当による利回り（％）</td>
+</tr>
+</tbody>
+</table>
+<div id="15db5261" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv(<span class="st">"01_Data/dow_jones_index/dow_jones_index.data"</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>df</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">quarter</th>
+<th data-quarto-table-cell-role="th">stock</th>
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th">open</th>
+<th data-quarto-table-cell-role="th">high</th>
+<th data-quarto-table-cell-role="th">low</th>
+<th data-quarto-table-cell-role="th">close</th>
+<th data-quarto-table-cell-role="th">volume</th>
+<th data-quarto-table-cell-role="th">percent_change_price</th>
+<th data-quarto-table-cell-role="th">percent_change_volume_over_last_wk</th>
+<th data-quarto-table-cell-role="th">previous_weeks_volume</th>
+<th data-quarto-table-cell-role="th">next_weeks_open</th>
+<th data-quarto-table-cell-role="th">next_weeks_close</th>
+<th data-quarto-table-cell-role="th">percent_change_next_weeks_price</th>
+<th data-quarto-table-cell-role="th">days_to_next_dividend</th>
+<th data-quarto-table-cell-role="th">percent_return_next_dividend</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>1</td>
+<td>AA</td>
+<td>1/7/2011</td>
+<td>$15.82</td>
+<td>$16.72</td>
+<td>$15.78</td>
+<td>$16.42</td>
+<td>239655616</td>
+<td>3.79267</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>$16.71</td>
+<td>$15.97</td>
+<td>-4.428490</td>
+<td>26</td>
+<td>0.182704</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>1</td>
+<td>AA</td>
+<td>1/14/2011</td>
+<td>$16.71</td>
+<td>$16.71</td>
+<td>$15.64</td>
+<td>$15.97</td>
+<td>242963398</td>
+<td>-4.42849</td>
+<td>1.380223</td>
+<td>239655616.0</td>
+<td>$16.19</td>
+<td>$15.79</td>
+<td>-2.470660</td>
+<td>19</td>
+<td>0.187852</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>1</td>
+<td>AA</td>
+<td>1/21/2011</td>
+<td>$16.19</td>
+<td>$16.38</td>
+<td>$15.60</td>
+<td>$15.79</td>
+<td>138428495</td>
+<td>-2.47066</td>
+<td>-43.024959</td>
+<td>242963398.0</td>
+<td>$15.87</td>
+<td>$16.13</td>
+<td>1.638310</td>
+<td>12</td>
+<td>0.189994</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>1</td>
+<td>AA</td>
+<td>1/28/2011</td>
+<td>$15.87</td>
+<td>$16.63</td>
+<td>$15.82</td>
+<td>$16.13</td>
+<td>151379173</td>
+<td>1.63831</td>
+<td>9.355500</td>
+<td>138428495.0</td>
+<td>$16.18</td>
+<td>$17.14</td>
+<td>5.933250</td>
+<td>5</td>
+<td>0.185989</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>1</td>
+<td>AA</td>
+<td>2/4/2011</td>
+<td>$16.18</td>
+<td>$17.39</td>
+<td>$16.18</td>
+<td>$17.14</td>
+<td>154387761</td>
+<td>5.93325</td>
+<td>1.987452</td>
+<td>151379173.0</td>
+<td>$17.33</td>
+<td>$17.37</td>
+<td>0.230814</td>
+<td>97</td>
+<td>0.175029</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">...</th>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">745</th>
+<td>2</td>
+<td>XOM</td>
+<td>5/27/2011</td>
+<td>$80.22</td>
+<td>$82.63</td>
+<td>$80.07</td>
+<td>$82.63</td>
+<td>68230855</td>
+<td>3.00424</td>
+<td>-21.355713</td>
+<td>86758820.0</td>
+<td>$83.28</td>
+<td>$81.18</td>
+<td>-2.521610</td>
+<td>75</td>
+<td>0.568801</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">746</th>
+<td>2</td>
+<td>XOM</td>
+<td>6/3/2011</td>
+<td>$83.28</td>
+<td>$83.75</td>
+<td>$80.18</td>
+<td>$81.18</td>
+<td>78616295</td>
+<td>-2.52161</td>
+<td>15.221032</td>
+<td>68230855.0</td>
+<td>$80.93</td>
+<td>$79.78</td>
+<td>-1.420980</td>
+<td>68</td>
+<td>0.578960</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">747</th>
+<td>2</td>
+<td>XOM</td>
+<td>6/10/2011</td>
+<td>$80.93</td>
+<td>$81.87</td>
+<td>$79.72</td>
+<td>$79.78</td>
+<td>92380844</td>
+<td>-1.42098</td>
+<td>17.508519</td>
+<td>78616295.0</td>
+<td>$80.00</td>
+<td>$79.02</td>
+<td>-1.225000</td>
+<td>61</td>
+<td>0.589120</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">748</th>
+<td>2</td>
+<td>XOM</td>
+<td>6/17/2011</td>
+<td>$80.00</td>
+<td>$80.82</td>
+<td>$78.33</td>
+<td>$79.02</td>
+<td>100521400</td>
+<td>-1.22500</td>
+<td>8.811952</td>
+<td>92380844.0</td>
+<td>$78.65</td>
+<td>$76.78</td>
+<td>-2.377620</td>
+<td>54</td>
+<td>0.594786</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">749</th>
+<td>2</td>
+<td>XOM</td>
+<td>6/24/2011</td>
+<td>$78.65</td>
+<td>$81.12</td>
+<td>$76.78</td>
+<td>$76.78</td>
+<td>118679791</td>
+<td>-2.37762</td>
+<td>18.064204</td>
+<td>100521400.0</td>
+<td>$76.88</td>
+<td>$82.01</td>
+<td>6.672740</td>
+<td>47</td>
+<td>0.612139</td>
+</tr>
+</tbody>
+</table>
+
+<p>750 rows × 16 columns</p>
+</div>
+</div>
+</div>
+<div id="06006484" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>df1 <span class="op">=</span> df.set_index(<span class="st">"date"</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>df1</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">quarter</th>
+<th data-quarto-table-cell-role="th">stock</th>
+<th data-quarto-table-cell-role="th">open</th>
+<th data-quarto-table-cell-role="th">high</th>
+<th data-quarto-table-cell-role="th">low</th>
+<th data-quarto-table-cell-role="th">close</th>
+<th data-quarto-table-cell-role="th">volume</th>
+<th data-quarto-table-cell-role="th">percent_change_price</th>
+<th data-quarto-table-cell-role="th">percent_change_volume_over_last_wk</th>
+<th data-quarto-table-cell-role="th">previous_weeks_volume</th>
+<th data-quarto-table-cell-role="th">next_weeks_open</th>
+<th data-quarto-table-cell-role="th">next_weeks_close</th>
+<th data-quarto-table-cell-role="th">percent_change_next_weeks_price</th>
+<th data-quarto-table-cell-role="th">days_to_next_dividend</th>
+<th data-quarto-table-cell-role="th">percent_return_next_dividend</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">1/7/2011</th>
+<td>1</td>
+<td>AA</td>
+<td>$15.82</td>
+<td>$16.72</td>
+<td>$15.78</td>
+<td>$16.42</td>
+<td>239655616</td>
+<td>3.79267</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>$16.71</td>
+<td>$15.97</td>
+<td>-4.428490</td>
+<td>26</td>
+<td>0.182704</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1/14/2011</th>
+<td>1</td>
+<td>AA</td>
+<td>$16.71</td>
+<td>$16.71</td>
+<td>$15.64</td>
+<td>$15.97</td>
+<td>242963398</td>
+<td>-4.42849</td>
+<td>1.380223</td>
+<td>239655616.0</td>
+<td>$16.19</td>
+<td>$15.79</td>
+<td>-2.470660</td>
+<td>19</td>
+<td>0.187852</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">1/21/2011</th>
+<td>1</td>
+<td>AA</td>
+<td>$16.19</td>
+<td>$16.38</td>
+<td>$15.60</td>
+<td>$15.79</td>
+<td>138428495</td>
+<td>-2.47066</td>
+<td>-43.024959</td>
+<td>242963398.0</td>
+<td>$15.87</td>
+<td>$16.13</td>
+<td>1.638310</td>
+<td>12</td>
+<td>0.189994</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1/28/2011</th>
+<td>1</td>
+<td>AA</td>
+<td>$15.87</td>
+<td>$16.63</td>
+<td>$15.82</td>
+<td>$16.13</td>
+<td>151379173</td>
+<td>1.63831</td>
+<td>9.355500</td>
+<td>138428495.0</td>
+<td>$16.18</td>
+<td>$17.14</td>
+<td>5.933250</td>
+<td>5</td>
+<td>0.185989</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2/4/2011</th>
+<td>1</td>
+<td>AA</td>
+<td>$16.18</td>
+<td>$17.39</td>
+<td>$16.18</td>
+<td>$17.14</td>
+<td>154387761</td>
+<td>5.93325</td>
+<td>1.987452</td>
+<td>151379173.0</td>
+<td>$17.33</td>
+<td>$17.37</td>
+<td>0.230814</td>
+<td>97</td>
+<td>0.175029</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">...</th>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">5/27/2011</th>
+<td>2</td>
+<td>XOM</td>
+<td>$80.22</td>
+<td>$82.63</td>
+<td>$80.07</td>
+<td>$82.63</td>
+<td>68230855</td>
+<td>3.00424</td>
+<td>-21.355713</td>
+<td>86758820.0</td>
+<td>$83.28</td>
+<td>$81.18</td>
+<td>-2.521610</td>
+<td>75</td>
+<td>0.568801</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">6/3/2011</th>
+<td>2</td>
+<td>XOM</td>
+<td>$83.28</td>
+<td>$83.75</td>
+<td>$80.18</td>
+<td>$81.18</td>
+<td>78616295</td>
+<td>-2.52161</td>
+<td>15.221032</td>
+<td>68230855.0</td>
+<td>$80.93</td>
+<td>$79.78</td>
+<td>-1.420980</td>
+<td>68</td>
+<td>0.578960</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">6/10/2011</th>
+<td>2</td>
+<td>XOM</td>
+<td>$80.93</td>
+<td>$81.87</td>
+<td>$79.72</td>
+<td>$79.78</td>
+<td>92380844</td>
+<td>-1.42098</td>
+<td>17.508519</td>
+<td>78616295.0</td>
+<td>$80.00</td>
+<td>$79.02</td>
+<td>-1.225000</td>
+<td>61</td>
+<td>0.589120</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">6/17/2011</th>
+<td>2</td>
+<td>XOM</td>
+<td>$80.00</td>
+<td>$80.82</td>
+<td>$78.33</td>
+<td>$79.02</td>
+<td>100521400</td>
+<td>-1.22500</td>
+<td>8.811952</td>
+<td>92380844.0</td>
+<td>$78.65</td>
+<td>$76.78</td>
+<td>-2.377620</td>
+<td>54</td>
+<td>0.594786</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">6/24/2011</th>
+<td>2</td>
+<td>XOM</td>
+<td>$78.65</td>
+<td>$81.12</td>
+<td>$76.78</td>
+<td>$76.78</td>
+<td>118679791</td>
+<td>-2.37762</td>
+<td>18.064204</td>
+<td>100521400.0</td>
+<td>$76.88</td>
+<td>$82.01</td>
+<td>6.672740</td>
+<td>47</td>
+<td>0.612139</td>
+</tr>
+</tbody>
+</table>
+
+<p>750 rows × 15 columns</p>
+</div>
+</div>
+</div>
+<div id="bc83c62e" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>df1.plot()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="01_Analysis01_files/figure-html/cell-4-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>x quarter</li>
+</ul>
+<div id="c51bc4aa" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>dol_cols <span class="op">=</span> [</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"open"</span>, </span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"high"</span>, </span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"low"</span>, </span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">"close"</span>, </span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">"next_weeks_open"</span>, </span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">"next_weeks_close"</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  ]</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>df1[dol_cols] <span class="op">=</span> (</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    df1[dol_cols]</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    .replace(<span class="st">'[</span><span class="er">\</span><span class="st">$,]'</span>, <span class="st">''</span>, regex<span class="op">=</span><span class="va">True</span>)  <span class="co"># $, , を削除</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    .astype(<span class="bu">float</span>)                     <span class="co"># float型に変換</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="6d2a2ad3" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>df1</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">quarter</th>
+<th data-quarto-table-cell-role="th">stock</th>
+<th data-quarto-table-cell-role="th">open</th>
+<th data-quarto-table-cell-role="th">high</th>
+<th data-quarto-table-cell-role="th">low</th>
+<th data-quarto-table-cell-role="th">close</th>
+<th data-quarto-table-cell-role="th">volume</th>
+<th data-quarto-table-cell-role="th">percent_change_price</th>
+<th data-quarto-table-cell-role="th">percent_change_volume_over_last_wk</th>
+<th data-quarto-table-cell-role="th">previous_weeks_volume</th>
+<th data-quarto-table-cell-role="th">next_weeks_open</th>
+<th data-quarto-table-cell-role="th">next_weeks_close</th>
+<th data-quarto-table-cell-role="th">percent_change_next_weeks_price</th>
+<th data-quarto-table-cell-role="th">days_to_next_dividend</th>
+<th data-quarto-table-cell-role="th">percent_return_next_dividend</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">1/7/2011</th>
+<td>1</td>
+<td>AA</td>
+<td>15.82</td>
+<td>16.72</td>
+<td>15.78</td>
+<td>16.42</td>
+<td>239655616</td>
+<td>3.79267</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>16.71</td>
+<td>15.97</td>
+<td>-4.428490</td>
+<td>26</td>
+<td>0.182704</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1/14/2011</th>
+<td>1</td>
+<td>AA</td>
+<td>16.71</td>
+<td>16.71</td>
+<td>15.64</td>
+<td>15.97</td>
+<td>242963398</td>
+<td>-4.42849</td>
+<td>1.380223</td>
+<td>239655616.0</td>
+<td>16.19</td>
+<td>15.79</td>
+<td>-2.470660</td>
+<td>19</td>
+<td>0.187852</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">1/21/2011</th>
+<td>1</td>
+<td>AA</td>
+<td>16.19</td>
+<td>16.38</td>
+<td>15.60</td>
+<td>15.79</td>
+<td>138428495</td>
+<td>-2.47066</td>
+<td>-43.024959</td>
+<td>242963398.0</td>
+<td>15.87</td>
+<td>16.13</td>
+<td>1.638310</td>
+<td>12</td>
+<td>0.189994</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1/28/2011</th>
+<td>1</td>
+<td>AA</td>
+<td>15.87</td>
+<td>16.63</td>
+<td>15.82</td>
+<td>16.13</td>
+<td>151379173</td>
+<td>1.63831</td>
+<td>9.355500</td>
+<td>138428495.0</td>
+<td>16.18</td>
+<td>17.14</td>
+<td>5.933250</td>
+<td>5</td>
+<td>0.185989</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2/4/2011</th>
+<td>1</td>
+<td>AA</td>
+<td>16.18</td>
+<td>17.39</td>
+<td>16.18</td>
+<td>17.14</td>
+<td>154387761</td>
+<td>5.93325</td>
+<td>1.987452</td>
+<td>151379173.0</td>
+<td>17.33</td>
+<td>17.37</td>
+<td>0.230814</td>
+<td>97</td>
+<td>0.175029</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">...</th>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">5/27/2011</th>
+<td>2</td>
+<td>XOM</td>
+<td>80.22</td>
+<td>82.63</td>
+<td>80.07</td>
+<td>82.63</td>
+<td>68230855</td>
+<td>3.00424</td>
+<td>-21.355713</td>
+<td>86758820.0</td>
+<td>83.28</td>
+<td>81.18</td>
+<td>-2.521610</td>
+<td>75</td>
+<td>0.568801</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">6/3/2011</th>
+<td>2</td>
+<td>XOM</td>
+<td>83.28</td>
+<td>83.75</td>
+<td>80.18</td>
+<td>81.18</td>
+<td>78616295</td>
+<td>-2.52161</td>
+<td>15.221032</td>
+<td>68230855.0</td>
+<td>80.93</td>
+<td>79.78</td>
+<td>-1.420980</td>
+<td>68</td>
+<td>0.578960</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">6/10/2011</th>
+<td>2</td>
+<td>XOM</td>
+<td>80.93</td>
+<td>81.87</td>
+<td>79.72</td>
+<td>79.78</td>
+<td>92380844</td>
+<td>-1.42098</td>
+<td>17.508519</td>
+<td>78616295.0</td>
+<td>80.00</td>
+<td>79.02</td>
+<td>-1.225000</td>
+<td>61</td>
+<td>0.589120</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">6/17/2011</th>
+<td>2</td>
+<td>XOM</td>
+<td>80.00</td>
+<td>80.82</td>
+<td>78.33</td>
+<td>79.02</td>
+<td>100521400</td>
+<td>-1.22500</td>
+<td>8.811952</td>
+<td>92380844.0</td>
+<td>78.65</td>
+<td>76.78</td>
+<td>-2.377620</td>
+<td>54</td>
+<td>0.594786</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">6/24/2011</th>
+<td>2</td>
+<td>XOM</td>
+<td>78.65</td>
+<td>81.12</td>
+<td>76.78</td>
+<td>76.78</td>
+<td>118679791</td>
+<td>-2.37762</td>
+<td>18.064204</td>
+<td>100521400.0</td>
+<td>76.88</td>
+<td>82.01</td>
+<td>6.672740</td>
+<td>47</td>
+<td>0.612139</td>
+</tr>
+</tbody>
+</table>
+
+<p>750 rows × 15 columns</p>
+</div>
+</div>
+</div>
+<div id="f9fd74e7" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>df1.groupby(<span class="st">"stock"</span>).count()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">quarter</th>
+<th data-quarto-table-cell-role="th">open</th>
+<th data-quarto-table-cell-role="th">high</th>
+<th data-quarto-table-cell-role="th">low</th>
+<th data-quarto-table-cell-role="th">close</th>
+<th data-quarto-table-cell-role="th">volume</th>
+<th data-quarto-table-cell-role="th">percent_change_price</th>
+<th data-quarto-table-cell-role="th">percent_change_volume_over_last_wk</th>
+<th data-quarto-table-cell-role="th">previous_weeks_volume</th>
+<th data-quarto-table-cell-role="th">next_weeks_open</th>
+<th data-quarto-table-cell-role="th">next_weeks_close</th>
+<th data-quarto-table-cell-role="th">percent_change_next_weeks_price</th>
+<th data-quarto-table-cell-role="th">days_to_next_dividend</th>
+<th data-quarto-table-cell-role="th">percent_return_next_dividend</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">stock</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">AA</th>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>24</td>
+<td>24</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">AXP</th>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>24</td>
+<td>24</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">BA</th>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>24</td>
+<td>24</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">BAC</th>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>24</td>
+<td>24</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">CAT</th>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>24</td>
+<td>24</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">CSCO</th>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>24</td>
+<td>24</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">CVX</th>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>24</td>
+<td>24</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">DD</th>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>24</td>
+<td>24</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">DIS</th>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>24</td>
+<td>24</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">GE</th>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>24</td>
+<td>24</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">HD</th>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>24</td>
+<td>24</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">HPQ</th>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>24</td>
+<td>24</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">IBM</th>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>24</td>
+<td>24</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">INTC</th>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>24</td>
+<td>24</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">JNJ</th>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>24</td>
+<td>24</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">JPM</th>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>24</td>
+<td>24</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">KO</th>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>24</td>
+<td>24</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">KRFT</th>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>24</td>
+<td>24</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">MCD</th>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>24</td>
+<td>24</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">MMM</th>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>24</td>
+<td>24</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">MRK</th>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>24</td>
+<td>24</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">MSFT</th>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>24</td>
+<td>24</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">PFE</th>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>24</td>
+<td>24</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">PG</th>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>24</td>
+<td>24</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">T</th>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>24</td>
+<td>24</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">TRV</th>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>24</td>
+<td>24</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">UTX</th>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>24</td>
+<td>24</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">VZ</th>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>24</td>
+<td>24</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">WMT</th>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>24</td>
+<td>24</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">XOM</th>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>24</td>
+<td>24</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+<td>25</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div id="ddd6c29d" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>numcols <span class="op">=</span> [<span class="st">"open"</span>, <span class="st">"high"</span>, <span class="st">"low"</span>, <span class="st">"close"</span>, <span class="st">"volume"</span>, <span class="st">"percent_change_price"</span>, <span class="st">"percent_change_volume_over_last_wk"</span>, <span class="st">"previous_weeks_volume"</span>, <span class="st">"next_weeks_open"</span>, <span class="st">"next_weeks_close"</span>, <span class="st">"percent_change_next_weeks_price"</span>, <span class="st">"days_to_next_dividend"</span>, <span class="st">"percent_return_next_dividend"</span>]</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>dfAA <span class="op">=</span> df1[df1[<span class="st">"stock"</span>] <span class="op">==</span> <span class="st">"AA"</span>][numcols]</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>dfAA</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">open</th>
+<th data-quarto-table-cell-role="th">high</th>
+<th data-quarto-table-cell-role="th">low</th>
+<th data-quarto-table-cell-role="th">close</th>
+<th data-quarto-table-cell-role="th">volume</th>
+<th data-quarto-table-cell-role="th">percent_change_price</th>
+<th data-quarto-table-cell-role="th">percent_change_volume_over_last_wk</th>
+<th data-quarto-table-cell-role="th">previous_weeks_volume</th>
+<th data-quarto-table-cell-role="th">next_weeks_open</th>
+<th data-quarto-table-cell-role="th">next_weeks_close</th>
+<th data-quarto-table-cell-role="th">percent_change_next_weeks_price</th>
+<th data-quarto-table-cell-role="th">days_to_next_dividend</th>
+<th data-quarto-table-cell-role="th">percent_return_next_dividend</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">1/7/2011</th>
+<td>15.82</td>
+<td>16.72</td>
+<td>15.78</td>
+<td>16.42</td>
+<td>239655616</td>
+<td>3.792670</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>16.71</td>
+<td>15.97</td>
+<td>-4.428490</td>
+<td>26</td>
+<td>0.182704</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1/14/2011</th>
+<td>16.71</td>
+<td>16.71</td>
+<td>15.64</td>
+<td>15.97</td>
+<td>242963398</td>
+<td>-4.428490</td>
+<td>1.380223</td>
+<td>239655616.0</td>
+<td>16.19</td>
+<td>15.79</td>
+<td>-2.470660</td>
+<td>19</td>
+<td>0.187852</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">1/21/2011</th>
+<td>16.19</td>
+<td>16.38</td>
+<td>15.60</td>
+<td>15.79</td>
+<td>138428495</td>
+<td>-2.470660</td>
+<td>-43.024959</td>
+<td>242963398.0</td>
+<td>15.87</td>
+<td>16.13</td>
+<td>1.638310</td>
+<td>12</td>
+<td>0.189994</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1/28/2011</th>
+<td>15.87</td>
+<td>16.63</td>
+<td>15.82</td>
+<td>16.13</td>
+<td>151379173</td>
+<td>1.638310</td>
+<td>9.355500</td>
+<td>138428495.0</td>
+<td>16.18</td>
+<td>17.14</td>
+<td>5.933250</td>
+<td>5</td>
+<td>0.185989</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2/4/2011</th>
+<td>16.18</td>
+<td>17.39</td>
+<td>16.18</td>
+<td>17.14</td>
+<td>154387761</td>
+<td>5.933250</td>
+<td>1.987452</td>
+<td>151379173.0</td>
+<td>17.33</td>
+<td>17.37</td>
+<td>0.230814</td>
+<td>97</td>
+<td>0.175029</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">2/11/2011</th>
+<td>17.33</td>
+<td>17.48</td>
+<td>16.97</td>
+<td>17.37</td>
+<td>114691279</td>
+<td>0.230814</td>
+<td>-25.712195</td>
+<td>154387761.0</td>
+<td>17.39</td>
+<td>17.28</td>
+<td>-0.632547</td>
+<td>90</td>
+<td>0.172712</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2/18/2011</th>
+<td>17.39</td>
+<td>17.68</td>
+<td>17.28</td>
+<td>17.28</td>
+<td>80023895</td>
+<td>-0.632547</td>
+<td>-30.226696</td>
+<td>114691279.0</td>
+<td>16.98</td>
+<td>16.68</td>
+<td>-1.766780</td>
+<td>83</td>
+<td>0.173611</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">2/25/2011</th>
+<td>16.98</td>
+<td>17.15</td>
+<td>15.96</td>
+<td>16.68</td>
+<td>132981863</td>
+<td>-1.766780</td>
+<td>66.177694</td>
+<td>80023895.0</td>
+<td>16.81</td>
+<td>16.58</td>
+<td>-1.368230</td>
+<td>76</td>
+<td>0.179856</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">3/4/2011</th>
+<td>16.81</td>
+<td>16.94</td>
+<td>16.13</td>
+<td>16.58</td>
+<td>109493077</td>
+<td>-1.368230</td>
+<td>-17.663150</td>
+<td>132981863.0</td>
+<td>16.58</td>
+<td>16.03</td>
+<td>-3.317250</td>
+<td>69</td>
+<td>0.180941</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3/11/2011</th>
+<td>16.58</td>
+<td>16.75</td>
+<td>15.42</td>
+<td>16.03</td>
+<td>114332562</td>
+<td>-3.317250</td>
+<td>4.419900</td>
+<td>109493077.0</td>
+<td>15.95</td>
+<td>16.11</td>
+<td>1.003130</td>
+<td>62</td>
+<td>0.187149</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">3/18/2011</th>
+<td>15.95</td>
+<td>16.33</td>
+<td>15.43</td>
+<td>16.11</td>
+<td>130374108</td>
+<td>1.003130</td>
+<td>14.030601</td>
+<td>114332562.0</td>
+<td>16.38</td>
+<td>17.09</td>
+<td>4.334550</td>
+<td>55</td>
+<td>0.186220</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3/25/2011</th>
+<td>16.38</td>
+<td>17.24</td>
+<td>16.26</td>
+<td>17.09</td>
+<td>95550392</td>
+<td>4.334550</td>
+<td>-26.710607</td>
+<td>130374108.0</td>
+<td>17.13</td>
+<td>17.47</td>
+<td>1.984820</td>
+<td>48</td>
+<td>0.175541</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4/1/2011</th>
+<td>17.13</td>
+<td>17.80</td>
+<td>17.02</td>
+<td>17.47</td>
+<td>103320396</td>
+<td>1.984820</td>
+<td>8.131839</td>
+<td>95550392.0</td>
+<td>17.42</td>
+<td>17.92</td>
+<td>2.870260</td>
+<td>41</td>
+<td>0.171723</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">4/8/2011</th>
+<td>17.42</td>
+<td>18.47</td>
+<td>17.42</td>
+<td>17.92</td>
+<td>129237024</td>
+<td>2.870260</td>
+<td>25.083748</td>
+<td>103320396.0</td>
+<td>18.06</td>
+<td>16.52</td>
+<td>-8.527130</td>
+<td>34</td>
+<td>0.167411</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4/15/2011</th>
+<td>18.06</td>
+<td>18.19</td>
+<td>16.38</td>
+<td>16.52</td>
+<td>213061090</td>
+<td>-8.527130</td>
+<td>64.860721</td>
+<td>129237024.0</td>
+<td>16.36</td>
+<td>16.97</td>
+<td>3.728610</td>
+<td>27</td>
+<td>0.181598</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">4/21/2011</th>
+<td>16.36</td>
+<td>16.97</td>
+<td>15.88</td>
+<td>16.97</td>
+<td>85235391</td>
+<td>3.728610</td>
+<td>-59.994858</td>
+<td>213061090.0</td>
+<td>16.94</td>
+<td>17.00</td>
+<td>0.354191</td>
+<td>21</td>
+<td>0.176783</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4/29/2011</th>
+<td>16.94</td>
+<td>17.24</td>
+<td>16.66</td>
+<td>17.00</td>
+<td>90831895</td>
+<td>0.354191</td>
+<td>6.565939</td>
+<td>85235391.0</td>
+<td>17.27</td>
+<td>17.15</td>
+<td>-0.694847</td>
+<td>13</td>
+<td>0.176471</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">5/6/2011</th>
+<td>17.27</td>
+<td>17.96</td>
+<td>16.83</td>
+<td>17.15</td>
+<td>225053559</td>
+<td>-0.694847</td>
+<td>147.769309</td>
+<td>90831895.0</td>
+<td>17.16</td>
+<td>17.10</td>
+<td>-0.349650</td>
+<td>6</td>
+<td>0.174927</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">5/13/2011</th>
+<td>17.16</td>
+<td>17.62</td>
+<td>16.75</td>
+<td>17.10</td>
+<td>111630753</td>
+<td>-0.349650</td>
+<td>-50.398139</td>
+<td>225053559.0</td>
+<td>17.00</td>
+<td>16.26</td>
+<td>-4.352940</td>
+<td>82</td>
+<td>0.175439</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">5/20/2011</th>
+<td>17.00</td>
+<td>17.29</td>
+<td>16.26</td>
+<td>16.26</td>
+<td>118281015</td>
+<td>-4.352940</td>
+<td>5.957374</td>
+<td>111630753.0</td>
+<td>15.96</td>
+<td>16.48</td>
+<td>3.258150</td>
+<td>75</td>
+<td>0.184502</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">5/27/2011</th>
+<td>15.96</td>
+<td>16.48</td>
+<td>15.83</td>
+<td>16.48</td>
+<td>77236662</td>
+<td>3.258150</td>
+<td>-34.700711</td>
+<td>118281015.0</td>
+<td>16.73</td>
+<td>15.92</td>
+<td>-4.841600</td>
+<td>68</td>
+<td>0.182039</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">6/3/2011</th>
+<td>16.73</td>
+<td>16.83</td>
+<td>15.77</td>
+<td>15.92</td>
+<td>77152591</td>
+<td>-4.841600</td>
+<td>-0.108849</td>
+<td>77236662.0</td>
+<td>15.92</td>
+<td>15.28</td>
+<td>-4.020100</td>
+<td>61</td>
+<td>0.188442</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">6/10/2011</th>
+<td>15.92</td>
+<td>16.03</td>
+<td>15.17</td>
+<td>15.28</td>
+<td>94970970</td>
+<td>-4.020100</td>
+<td>23.094985</td>
+<td>77152591.0</td>
+<td>15.29</td>
+<td>14.72</td>
+<td>-3.727930</td>
+<td>54</td>
+<td>0.196335</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">6/17/2011</th>
+<td>15.29</td>
+<td>15.50</td>
+<td>14.59</td>
+<td>14.72</td>
+<td>111273573</td>
+<td>-3.727930</td>
+<td>17.165880</td>
+<td>94970970.0</td>
+<td>14.67</td>
+<td>15.23</td>
+<td>3.817310</td>
+<td>47</td>
+<td>0.203804</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">6/24/2011</th>
+<td>14.67</td>
+<td>15.60</td>
+<td>14.56</td>
+<td>15.23</td>
+<td>99423717</td>
+<td>3.817310</td>
+<td>-10.649299</td>
+<td>111273573.0</td>
+<td>15.22</td>
+<td>16.31</td>
+<td>7.161630</td>
+<td>40</td>
+<td>0.196980</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div id="2cb882a2" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>cols1 <span class="op">=</span> [<span class="st">"open"</span>, <span class="st">"high"</span>, <span class="st">"low"</span>, <span class="st">"close"</span>, <span class="st">"next_weeks_open"</span>, <span class="st">"next_weeks_close"</span>]</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>cols2 <span class="op">=</span> [<span class="st">"volume"</span>, <span class="st">"previous_weeks_volume"</span>]</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>cols3 <span class="op">=</span> [<span class="st">"percent_change_price"</span>, <span class="st">"percent_change_next_weeks_price"</span>]</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>cols4 <span class="op">=</span> [<span class="st">"percent_change_volume_over_last_wk"</span>]</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>cols5 <span class="op">=</span> [<span class="st">"days_to_next_dividend"</span>]</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>cols6 <span class="op">=</span> [<span class="st">"percent_return_next_dividend"</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="2979f930" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>dfAA[cols1].plot()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="01_Analysis01_files/figure-html/cell-10-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="74ecb9d8" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>dfAA[cols2].plot()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="01_Analysis01_files/figure-html/cell-11-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="16fc51fc" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>dfAA[cols3].plot()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="01_Analysis01_files/figure-html/cell-12-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="163f6ba7" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>dfAA[cols4].plot()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="01_Analysis01_files/figure-html/cell-13-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="f30e6307" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>dfAA[cols5].plot()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="01_Analysis01_files/figure-html/cell-14-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="6901778f" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>dfAA[cols6].plot()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="01_Analysis01_files/figure-html/cell-15-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<section id="true-上がるfalse-下がる" class="level3">
+<h3 class="anchored" data-anchor-id="true-上がるfalse-下がる">True: 上がる、False: 下がる</h3>
+<div id="52e4a455" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>dfAA[<span class="st">"open_updown"</span>] <span class="op">=</span> dfAA[<span class="st">"open"</span>] <span class="op">&lt;</span> dfAA[<span class="st">"next_weeks_open"</span>]</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>dfAA[<span class="st">"close_updown"</span>] <span class="op">=</span> dfAA[<span class="st">"close"</span>] <span class="op">&lt;</span> dfAA[<span class="st">"next_weeks_close"</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="8f24d164" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>up <span class="op">=</span> dfAA[dfAA[<span class="st">"open_updown"</span>]]</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>down <span class="op">=</span> dfAA[<span class="op">~</span>dfAA[<span class="st">"open_updown"</span>]]</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>plt.scatter(x <span class="op">=</span> up[<span class="st">"high"</span>], y <span class="op">=</span> up[<span class="st">"low"</span>])</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>plt.scatter(x <span class="op">=</span> down[<span class="st">"high"</span>], y <span class="op">=</span> down[<span class="st">"low"</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="01_Analysis01_files/figure-html/cell-17-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="125e6573" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>plt.scatter(x <span class="op">=</span> up[cols3[<span class="dv">0</span>]], y <span class="op">=</span> up[cols2[<span class="dv">0</span>]])</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>plt.scatter(x <span class="op">=</span> down[cols3[<span class="dv">0</span>]], y <span class="op">=</span> down[cols2[<span class="dv">0</span>]])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="01_Analysis01_files/figure-html/cell-18-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="9039cdfa" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>plt.scatter(x <span class="op">=</span> up[cols6[<span class="dv">0</span>]], y <span class="op">=</span> up[cols2[<span class="dv">0</span>]])</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>plt.scatter(x <span class="op">=</span> down[cols6[<span class="dv">0</span>]], y <span class="op">=</span> down[cols2[<span class="dv">0</span>]])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="01_Analysis01_files/figure-html/cell-19-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="a46fd8f4" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>plt.scatter(x <span class="op">=</span> up[cols6[<span class="dv">0</span>]], y <span class="op">=</span> up[cols3[<span class="dv">0</span>]])</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>plt.scatter(x <span class="op">=</span> down[cols6[<span class="dv">0</span>]], y <span class="op">=</span> down[cols3[<span class="dv">0</span>]])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="01_Analysis01_files/figure-html/cell-20-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="b955b64b" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>plt.scatter(x <span class="op">=</span> up[cols4[<span class="dv">0</span>]], y <span class="op">=</span> up[cols3[<span class="dv">0</span>]])</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>plt.scatter(x <span class="op">=</span> down[cols4[<span class="dv">0</span>]], y <span class="op">=</span> down[cols3[<span class="dv">0</span>]])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="01_Analysis01_files/figure-html/cell-21-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="3d769ed0" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> load_custom_file(filepath):</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>    data <span class="op">=</span> []</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> <span class="bu">open</span>(filepath, <span class="st">'r'</span>) <span class="im">as</span> f:</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> line <span class="kw">in</span> f:</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>            parts <span class="op">=</span> line.strip().split()</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>            label <span class="op">=</span> parts[<span class="dv">0</span>]  <span class="co"># 最初の数字（ラベル部分）</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>            <span class="co"># 残りの "番号:値" ペアを辞書に変換</span></span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>            features <span class="op">=</span> {}</span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> item <span class="kw">in</span> parts[<span class="dv">1</span>:]:</span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>                idx, val <span class="op">=</span> item.split(<span class="st">':'</span>)</span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>                features[<span class="bu">int</span>(idx)] <span class="op">=</span> <span class="bu">float</span>(val)</span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>            <span class="co"># ラベルを追加</span></span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>            features[<span class="st">'label'</span>] <span class="op">=</span> label</span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>            data.append(features)</span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a>    <span class="co"># DataFrameに変換（欠けているカラムはNaNで埋める）</span></span>
+<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> pd.DataFrame(data)</span>
+<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-22"><a href="#cb21-22" aria-hidden="true" tabindex="-1"></a>    <span class="co"># カラム順を label → feature1, feature2, ...</span></span>
+<span id="cb21-23"><a href="#cb21-23" aria-hidden="true" tabindex="-1"></a>    cols <span class="op">=</span> [<span class="st">'label'</span>] <span class="op">+</span> <span class="bu">sorted</span>([c <span class="cf">for</span> c <span class="kw">in</span> df.columns <span class="cf">if</span> c <span class="op">!=</span> <span class="st">'label'</span>])</span>
+<span id="cb21-24"><a href="#cb21-24" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> df[cols]</span>
+<span id="cb21-25"><a href="#cb21-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-26"><a href="#cb21-26" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> df</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="859163ac" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>DF <span class="op">=</span> load_custom_file(<span class="st">"01_Data/Gas Sensor Array Drift Dataset/batch6.dat"</span>)</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>DF.plot(legend<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="01_Analysis01_files/figure-html/cell-23-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="2227a921" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv(</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"01_Data/secom/secom_labels.data"</span>,</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>    sep<span class="op">=</span><span class="vs">r'</span><span class="dv">\s</span><span class="op">+</span><span class="vs">'</span>,</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>    quotechar<span class="op">=</span><span class="st">'"'</span>,</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>    names<span class="op">=</span>[<span class="st">'label'</span>, <span class="st">'timestamp'</span>]</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>df[<span class="st">'timestamp'</span>] <span class="op">=</span> pd.to_datetime(df[<span class="st">'timestamp'</span>], <span class="bu">format</span><span class="op">=</span><span class="st">'</span><span class="sc">%d</span><span class="st">/%m/%Y %H:%M:%S'</span>)</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>df</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">label</th>
+<th data-quarto-table-cell-role="th">timestamp</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>-1</td>
+<td>2008-07-19 11:55:00</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>-1</td>
+<td>2008-07-19 12:32:00</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>1</td>
+<td>2008-07-19 13:17:00</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>-1</td>
+<td>2008-07-19 14:43:00</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>-1</td>
+<td>2008-07-19 15:22:00</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">...</th>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">1562</th>
+<td>-1</td>
+<td>2008-10-16 15:13:00</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1563</th>
+<td>-1</td>
+<td>2008-10-16 20:49:00</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">1564</th>
+<td>-1</td>
+<td>2008-10-17 05:26:00</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1565</th>
+<td>-1</td>
+<td>2008-10-17 06:01:00</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">1566</th>
+<td>-1</td>
+<td>2008-10-17 06:07:00</td>
+</tr>
+</tbody>
+</table>
+
+<p>1567 rows × 2 columns</p>
+</div>
+</div>
+</div>
+<div id="767074d5" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>df1 <span class="op">=</span> pd.read_csv(<span class="st">"01_Data/secom/secom.data"</span>, sep<span class="op">=</span><span class="vs">r'</span><span class="dv">\s</span><span class="op">+</span><span class="vs">'</span>, header<span class="op">=</span><span class="va">None</span>)</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>df1</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">0</th>
+<th data-quarto-table-cell-role="th">1</th>
+<th data-quarto-table-cell-role="th">2</th>
+<th data-quarto-table-cell-role="th">3</th>
+<th data-quarto-table-cell-role="th">4</th>
+<th data-quarto-table-cell-role="th">5</th>
+<th data-quarto-table-cell-role="th">6</th>
+<th data-quarto-table-cell-role="th">7</th>
+<th data-quarto-table-cell-role="th">8</th>
+<th data-quarto-table-cell-role="th">9</th>
+<th data-quarto-table-cell-role="th">...</th>
+<th data-quarto-table-cell-role="th">580</th>
+<th data-quarto-table-cell-role="th">581</th>
+<th data-quarto-table-cell-role="th">582</th>
+<th data-quarto-table-cell-role="th">583</th>
+<th data-quarto-table-cell-role="th">584</th>
+<th data-quarto-table-cell-role="th">585</th>
+<th data-quarto-table-cell-role="th">586</th>
+<th data-quarto-table-cell-role="th">587</th>
+<th data-quarto-table-cell-role="th">588</th>
+<th data-quarto-table-cell-role="th">589</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>3030.93</td>
+<td>2564.00</td>
+<td>2187.7333</td>
+<td>1411.1265</td>
+<td>1.3602</td>
+<td>100.0</td>
+<td>97.6133</td>
+<td>0.1242</td>
+<td>1.5005</td>
+<td>0.0162</td>
+<td>...</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>0.5005</td>
+<td>0.0118</td>
+<td>0.0035</td>
+<td>2.3630</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>3095.78</td>
+<td>2465.14</td>
+<td>2230.4222</td>
+<td>1463.6606</td>
+<td>0.8294</td>
+<td>100.0</td>
+<td>102.3433</td>
+<td>0.1247</td>
+<td>1.4966</td>
+<td>-0.0005</td>
+<td>...</td>
+<td>0.0060</td>
+<td>208.2045</td>
+<td>0.5019</td>
+<td>0.0223</td>
+<td>0.0055</td>
+<td>4.4447</td>
+<td>0.0096</td>
+<td>0.0201</td>
+<td>0.0060</td>
+<td>208.2045</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>2932.61</td>
+<td>2559.94</td>
+<td>2186.4111</td>
+<td>1698.0172</td>
+<td>1.5102</td>
+<td>100.0</td>
+<td>95.4878</td>
+<td>0.1241</td>
+<td>1.4436</td>
+<td>0.0041</td>
+<td>...</td>
+<td>0.0148</td>
+<td>82.8602</td>
+<td>0.4958</td>
+<td>0.0157</td>
+<td>0.0039</td>
+<td>3.1745</td>
+<td>0.0584</td>
+<td>0.0484</td>
+<td>0.0148</td>
+<td>82.8602</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>2988.72</td>
+<td>2479.90</td>
+<td>2199.0333</td>
+<td>909.7926</td>
+<td>1.3204</td>
+<td>100.0</td>
+<td>104.2367</td>
+<td>0.1217</td>
+<td>1.4882</td>
+<td>-0.0124</td>
+<td>...</td>
+<td>0.0044</td>
+<td>73.8432</td>
+<td>0.4990</td>
+<td>0.0103</td>
+<td>0.0025</td>
+<td>2.0544</td>
+<td>0.0202</td>
+<td>0.0149</td>
+<td>0.0044</td>
+<td>73.8432</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>3032.24</td>
+<td>2502.87</td>
+<td>2233.3667</td>
+<td>1326.5200</td>
+<td>1.5334</td>
+<td>100.0</td>
+<td>100.3967</td>
+<td>0.1235</td>
+<td>1.5031</td>
+<td>-0.0031</td>
+<td>...</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>0.4800</td>
+<td>0.4766</td>
+<td>0.1045</td>
+<td>99.3032</td>
+<td>0.0202</td>
+<td>0.0149</td>
+<td>0.0044</td>
+<td>73.8432</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">...</th>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">1562</th>
+<td>2899.41</td>
+<td>2464.36</td>
+<td>2179.7333</td>
+<td>3085.3781</td>
+<td>1.4843</td>
+<td>100.0</td>
+<td>82.2467</td>
+<td>0.1248</td>
+<td>1.3424</td>
+<td>-0.0045</td>
+<td>...</td>
+<td>0.0047</td>
+<td>203.1720</td>
+<td>0.4988</td>
+<td>0.0143</td>
+<td>0.0039</td>
+<td>2.8669</td>
+<td>0.0068</td>
+<td>0.0138</td>
+<td>0.0047</td>
+<td>203.1720</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1563</th>
+<td>3052.31</td>
+<td>2522.55</td>
+<td>2198.5667</td>
+<td>1124.6595</td>
+<td>0.8763</td>
+<td>100.0</td>
+<td>98.4689</td>
+<td>0.1205</td>
+<td>1.4333</td>
+<td>-0.0061</td>
+<td>...</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>0.4975</td>
+<td>0.0131</td>
+<td>0.0036</td>
+<td>2.6238</td>
+<td>0.0068</td>
+<td>0.0138</td>
+<td>0.0047</td>
+<td>203.1720</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">1564</th>
+<td>2978.81</td>
+<td>2379.78</td>
+<td>2206.3000</td>
+<td>1110.4967</td>
+<td>0.8236</td>
+<td>100.0</td>
+<td>99.4122</td>
+<td>0.1208</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>...</td>
+<td>0.0025</td>
+<td>43.5231</td>
+<td>0.4987</td>
+<td>0.0153</td>
+<td>0.0041</td>
+<td>3.0590</td>
+<td>0.0197</td>
+<td>0.0086</td>
+<td>0.0025</td>
+<td>43.5231</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1565</th>
+<td>2894.92</td>
+<td>2532.01</td>
+<td>2177.0333</td>
+<td>1183.7287</td>
+<td>1.5726</td>
+<td>100.0</td>
+<td>98.7978</td>
+<td>0.1213</td>
+<td>1.4622</td>
+<td>-0.0072</td>
+<td>...</td>
+<td>0.0075</td>
+<td>93.4941</td>
+<td>0.5004</td>
+<td>0.0178</td>
+<td>0.0038</td>
+<td>3.5662</td>
+<td>0.0262</td>
+<td>0.0245</td>
+<td>0.0075</td>
+<td>93.4941</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">1566</th>
+<td>2944.92</td>
+<td>2450.76</td>
+<td>2195.4444</td>
+<td>2914.1792</td>
+<td>1.5978</td>
+<td>100.0</td>
+<td>85.1011</td>
+<td>0.1235</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>...</td>
+<td>0.0045</td>
+<td>137.7844</td>
+<td>0.4987</td>
+<td>0.0181</td>
+<td>0.0040</td>
+<td>3.6275</td>
+<td>0.0117</td>
+<td>0.0162</td>
+<td>0.0045</td>
+<td>137.7844</td>
+</tr>
+</tbody>
+</table>
+
+<p>1567 rows × 590 columns</p>
+</div>
+</div>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/SuzuSys\.github\.io\/KalmanPaper");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
